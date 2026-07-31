@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forebears — Person Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3.4.31/dist/vue.global.prod.js"></script>
+<style>
+  :root{
+    --paper:#F2E8D5;
+    --paper-dim:#EADFC6;
+    --card:#FBF6EA;
+    --ink:#2B2118;
+    --ink-soft:#5A4C3C;
+    --walnut:#5C4030;
+    --walnut-dark:#3E2B20;
+    --brass:#9C7A2E;
+    --brass-bright:#B8923F;
+    --sage:#6F7C5D;
+    --rust:#9C4A35;
+    --thread:#C9B892;
+    --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #FBF3DE 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, serif;
+    min-height:100vh;
+  }
+  ::selection{ background:var(--thread); color:var(--walnut-dark); }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:var(--thread); border-radius:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+
+  a{ color:var(--brass); }
+
+  .app{
+    display:grid;
+    grid-template-columns: 300px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width: 860px){
+    .app{ grid-template-columns: 1fr; }
+    .sidebar{ position:static !important; height:auto !important; border-right:none !important; border-bottom:1px solid var(--line); }
+  }
+
+  /* ---------- Sidebar / card index ---------- */
+  .sidebar{
+    background: linear-gradient(180deg, #EFE3C6, #E8D9B6);
+    border-right:1px solid var(--line);
+    padding:22px 16px 22px 16px;
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  .brand{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:1.5rem;
+    color:var(--walnut-dark);
+    letter-spacing:0.01em;
+    margin:2px 0 2px 6px;
+  }
+  .brand-sub{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 18px 6px;
+  }
+
+  .connect-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    margin-bottom:16px;
+    box-shadow:var(--shadow);
+  }
+  .connect-box p{ margin:0 0 8px; font-size:0.82rem; color:var(--ink-soft); line-height:1.45; }
+  .status-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; background:var(--rust); position:relative; top:-1px;}
+  .status-dot.on{ background:var(--sage); }
+
+  .btn{
+    font-family:'Lora', serif;
+    font-size:0.85rem;
+    border:1px solid var(--walnut);
+    background:var(--card);
+    color:var(--walnut-dark);
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn:hover{ background:#fff; transform:translateY(-1px); }
+  .btn:active{ transform:translateY(0); }
+  .btn.primary{ background:var(--walnut); color:var(--paper); border-color:var(--walnut-dark); }
+  .btn.primary:hover{ background:var(--walnut-dark); }
+  .btn.ghost{ background:transparent; border-color:var(--thread); color:var(--ink-soft); }
+  .btn.danger{ border-color:var(--rust); color:var(--rust); background:transparent; }
+  .btn.danger:hover{ background:var(--rust); color:#fff; }
+  .btn.small{ padding:5px 10px; font-size:0.76rem; }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  .new-person-btn{ width:100%; margin-bottom:14px; text-align:left; display:flex; align-items:center; gap:8px; }
+
+  .search-input{
+    width:100%; padding:8px 10px; margin-bottom:10px;
+    border:1px solid var(--line); border-radius:6px;
+    background:var(--card); font-family:'Lora',serif; font-size:0.85rem; color:var(--ink);
+  }
+  .search-input:focus{ outline:none; border-color:var(--brass); }
+
+  .index-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--ink-soft); margin:14px 6px 8px;
+  }
+
+  .card-list{ display:flex; flex-direction:column; gap:6px; }
+  .card-item{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--thread);
+    border-radius:6px;
+    padding:9px 11px;
+    cursor:pointer;
+    transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .card-item:hover{ transform: translateX(2px) rotate(-0.2deg); box-shadow:var(--shadow); }
+  .card-item.active{ border-left-color:var(--brass-bright); border-color:var(--brass-bright); background:#fff; }
+  .card-item .nm{ font-weight:600; font-size:0.92rem; color:var(--walnut-dark); }
+  .card-item .dt{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color:var(--ink-soft); margin-top:2px; }
+  .empty-note{ font-size:0.8rem; color:var(--ink-soft); padding:8px 6px; line-height:1.5; }
+
+  /* ---------- Main pane ---------- */
+  .main{ padding:44px 48px 80px; max-width:900px; }
+  @media (max-width: 640px){ .main{ padding:28px 18px 60px; } }
+
+  .hero-prompt{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(1.8rem, 3.4vw, 2.6rem);
+    line-height:1.18;
+    color:var(--walnut-dark);
+    margin:0 0 6px;
+  }
+  .hero-sub{
+    font-size:0.95rem; color:var(--ink-soft); margin:0 0 30px; max-width:56ch; line-height:1.55;
+  }
+
+  .ledger{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    position:relative;
+    padding:34px 36px 30px;
+  }
+  .ledger::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:46px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 26px, var(--thread) 26px 27px);
+    opacity:0.35;
+    border-radius:10px 0 0 10px;
+    pointer-events:none;
+  }
+  .ledger-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+    padding-left:34px; margin-bottom:22px; border-bottom:1px dashed var(--line); padding-bottom:18px;
+  }
+  .ledger-id{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft);
+    letter-spacing:0.03em;
+  }
+  .ledger-title{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.5rem; color:var(--walnut-dark);
+    margin:2px 0 0;
+  }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:18px 22px; padding-left:34px; }
+  @media (max-width:640px){ .grid2{ grid-template-columns:1fr; } }
+  .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+  .field.full{ grid-column:1 / -1; }
+  label{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.09em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  input[type=text], input[type=date], textarea{
+    font-family:'Lora', serif; font-size:0.98rem; color:var(--ink);
+    background:transparent;
+    border:none; border-bottom:1.5px solid var(--line);
+    padding:6px 2px 8px; width:100%;
+    transition:border-color .15s ease;
+  }
+  input[type=text]:focus, input[type=date]:focus, textarea:focus{
+    outline:none; border-bottom-color:var(--brass);
+  }
+  input::placeholder, textarea::placeholder{ color:#B8A888; font-style:italic; }
+  textarea{ resize:vertical; min-height:96px; line-height:1.55; font-family:'Lora',serif; }
+
+  .section-label{
+    grid-column:1/-1;
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1.05rem;
+    color:var(--walnut); margin:6px 0 -2px; padding-top:8px;
+  }
+
+  /* relationship picker */
+  .rel-field{ padding-left:34px; margin-bottom:20px; }
+  .rel-input-row{ display:flex; gap:8px; align-items:center; }
+  .rel-pills{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .pill{
+    display:inline-flex; align-items:center; gap:7px;
+    background:#fff; border:1px solid var(--thread);
+    border-radius:999px; padding:5px 6px 5px 12px; font-size:0.82rem; color:var(--walnut-dark);
+  }
+  .pill .thread-icon{ color:var(--sage); font-size:0.9em; }
+  .pill button{
+    border:none; background:var(--paper-dim); color:var(--ink-soft); border-radius:50%;
+    width:18px; height:18px; line-height:1; cursor:pointer; font-size:0.72rem;
+  }
+  .pill button:hover{ background:var(--rust); color:#fff; }
+  .pill.stub{ border-style:dashed; opacity:0.85; }
+  .pill.stub::after{ content:"new"; font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--brass); margin-left:2px; }
+
+  .places-row{ display:flex; flex-wrap:wrap; gap:8px; padding-left:34px; margin-bottom:8px; }
+
+  .footer-actions{
+    padding-left:34px; margin-top:22px; padding-top:18px; border-top:1px dashed var(--line);
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .save-note{ font-size:0.78rem; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+  .save-note.dirty{ color:var(--rust); }
+  .save-note.saved{ color:var(--sage); }
+
+  .toast{
+    position:fixed; bottom:22px; right:22px;
+    background:var(--walnut-dark); color:var(--paper);
+    padding:12px 18px; border-radius:8px; font-size:0.85rem;
+    box-shadow:0 10px 30px -8px rgba(0,0,0,0.4);
+    max-width:340px; z-index:50;
+  }
+
+  datalist{ display:none; }
+
+  .file-fallback{ display:flex; flex-direction:column; gap:8px; }
+
+  .placeholder-tabs{ display:flex; gap:6px; margin:26px 0 0 34px; }
+  .ph-tab{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:#B8A888; border:1px dashed var(--thread); border-radius:6px; padding:6px 10px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="app">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="brand">Forebears</div>
+      <div class="brand-sub">the person editor</div>
+
+      <div class="connect-box">
+        <p>
+          <span class="status-dot" :class="{on: dirHandle}"></span>
+          <span v-if="dirHandle">Connected to <strong>{{ dirHandle.name }}</strong></span>
+          <span v-else-if="fsAccessSupported">Not connected. Point me at your Forebears folder and I'll read and write JSON files directly.</span>
+          <span v-else>This browser can't write files directly. Use import / download below instead.</span>
+        </p>
+        <div class="btn-row">
+          <button class="btn small" v-if="fsAccessSupported" @click="connectFolder">
+            {{ dirHandle ? 'Reconnect' : 'Connect folder' }}
+          </button>
+          <label class="btn small ghost" style="cursor:pointer;">
+            Import JSON
+            <input type="file" accept=".json" multiple style="display:none" @change="importFiles">
+          </label>
+        </div>
+      </div>
+
+      <button class="btn primary new-person-btn" @click="newPerson">
+        <span>+</span> Tell me about someone
+      </button>
+
+      <input class="search-input" type="text" v-model="search" placeholder="Search the archive…">
+
+      <div class="index-label">{{ filteredPeople.length }} in the archive</div>
+      <div class="card-list">
+        <div v-if="filteredPeople.length === 0" class="empty-note">
+          Nobody here yet. Click "Tell me about someone" to start the first entry.
+        </div>
+        <div
+          v-for="p in filteredPeople" :key="p.id"
+          class="card-item" :class="{active: current && p.id === current.id}"
+          @click="selectPerson(p.id)"
+        >
+          <div class="nm">{{ p.name || '(unnamed)' }}</div>
+          <div class="dt">{{ lifespan(p) }}</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+    <main class="main" v-if="current">
+      <h1 class="hero-prompt">{{ isNew ? 'Tell me about someone in your family.' : ('Editing ' + (current.name || 'this entry') + '.') }}</h1>
+      <p class="hero-sub">
+        Fill in what you know — leave the rest blank. Parents, spouses, and children link automatically:
+        list Elizabeth as a spouse here, and Craig appears on her page too.
+      </p>
+
+      <div class="ledger">
+        <div class="ledger-head">
+          <div>
+            <div class="ledger-id">people/{{ current.id || 'unsaved' }}.json</div>
+            <div class="ledger-title">{{ current.name || 'New entry' }}</div>
+          </div>
+          <div class="btn-row" v-if="!isNew">
+            <button class="btn small danger" @click="deletePerson">Delete</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" type="text" v-model.trim="current.name" placeholder="Full name" @blur="touch">
+          </div>
+          <div class="field">
+            <label for="f-nick">Nickname</label>
+            <input id="f-nick" type="text" v-model.trim="current.nickname" placeholder="What people called them" @input="touch">
+          </div>
+
+          <div class="field">
+            <label for="f-bdate">Birth date</label>
+            <input id="f-bdate" type="text" v-model.trim="current.birth.date" placeholder="e.g. 1949 or March 4, 1949" @input="touch">
+          </div>
+          <div class="field">
+            <label for="f-bplace">Birth place</label>
+            <input id="f-bplace" type="text" v-model.trim="current.birth.place" placeholder="City, state" @input="touch">
+          </div>
+
+          <div class="field">
+            <label for="f-ddate">Death date</label>
+            <input id="f-ddate" type="text" v-model.trim="current.death.date" placeholder="Leave blank if living" @input="touch">
+          </div>
+          <div class="field">
+            <label for="f-dplace">Death place</label>
+            <input id="f-dplace" type="text" v-model.trim="current.death.place" placeholder="City, state" @input="touch">
+          </div>
+
+          <div class="field">
+            <label for="f-occ">Occupation</label>
+            <input id="f-occ" type="text" v-model.trim="current.occupation" placeholder="What they did" @input="touch">
+          </div>
+          <div class="field">
+            <label for="f-edu">Education</label>
+            <input id="f-edu" type="text" v-model.trim="current.education" placeholder="School, degree, year" @input="touch">
+          </div>
+
+          <div class="field">
+            <label for="f-mil">Military</label>
+            <input id="f-mil" type="text" v-model.trim="current.military" placeholder="Branch, years, notes" @input="touch">
+          </div>
+        </div>
+
+        <!-- Places lived (repeatable) -->
+        <div class="rel-field">
+          <label>Places lived</label>
+          <div class="rel-input-row" style="margin-top:8px;">
+            <input type="text" v-model.trim="placeInput" placeholder="Add a place and press Enter"
+                   @keydown.enter.prevent="addPlace">
+            <button class="btn small" @click="addPlace">Add</button>
+          </div>
+          <div class="rel-pills">
+            <span class="pill" v-for="(pl, i) in current.placesLived" :key="i">
+              {{ pl }}
+              <button @click="current.placesLived.splice(i,1); touch()">×</button>
+            </span>
+          </div>
+        </div>
+
+        <!-- Relationship pickers -->
+        <div class="rel-field" v-for="rel in relFields" :key="rel.key">
+          <label>{{ rel.label }}</label>
+          <div class="rel-input-row" style="margin-top:8px;">
+            <input type="text" v-model.trim="relInputs[rel.key]" :list="'dl-'+rel.key"
+                   :placeholder="rel.placeholder"
+                   @keydown.enter.prevent="addRelation(rel.key)">
+            <datalist :id="'dl-'+rel.key">
+              <option v-for="p in people" :key="p.id" :value="p.name"></option>
+            </datalist>
+            <button class="btn small" @click="addRelation(rel.key)">Link</button>
+          </div>
+          <div class="rel-pills">
+            <span class="pill" :class="{stub: isStub(id)}" v-for="id in current[rel.key]" :key="id">
+              <span class="thread-icon">⁘</span>
+              {{ nameOf(id) }}
+              <button @click="removeRelation(rel.key, id)">×</button>
+            </span>
+          </div>
+        </div>
+
+        <div class="field full" style="padding-left:34px;">
+          <label for="f-bio">Biography</label>
+          <textarea id="f-bio" v-model.trim="current.biography" placeholder="Tell their story — anything you remember." @input="touch"></textarea>
+        </div>
+
+        <div class="placeholder-tabs">
+          <span class="ph-tab">Photos — Phase 2</span>
+          <span class="ph-tab">Timeline — Phase 3</span>
+          <span class="ph-tab">Generated site — Phase 4</span>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn primary" @click="savePerson" :disabled="!current.name">Save</button>
+          <button class="btn ghost" v-if="!dirHandle" @click="downloadCurrent" :disabled="!current.name">Download JSON</button>
+          <span class="save-note" :class="{dirty: dirty, saved: !dirty && lastSavedAt}">
+            {{ dirty ? 'Unsaved changes' : (lastSavedAt ? 'Saved ' + lastSavedAt : '') }}
+          </span>
+        </div>
+      </div>
+    </main>
+
+    <main class="main" v-else>
+      <h1 class="hero-prompt">Welcome to the archive.</h1>
+      <p class="hero-sub">
+        Connect your Forebears folder, or start fresh — click "Tell me about someone" on the left to add the first person.
+      </p>
+    </main>
+  </div>
+
+  <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
+
+</div>
+
+<script>
+const { createApp, reactive, ref, computed, watch } = Vue;
+
+createApp({
+  setup(){
+    const people = reactive([]);        // array of person objects
+    const current = ref(null);          // active editing object (not yet in `people` until saved)
+    const isNew = ref(true);
+    const dirty = ref(false);
+    const search = ref('');
+    const placeInput = ref('');
+    const relInputs = reactive({ parents:'', spouses:'', children:'' });
+    const dirHandle = ref(null);
+    const peopleDirHandle = ref(null);
+    const lastSavedAt = ref('');
+    const toastMsg = ref('');
+    const fsAccessSupported = ('showDirectoryPicker' in window);
+
+    const relFields = [
+      { key:'parents',  label:'Parents',  placeholder:'Type a name…' },
+      { key:'spouses',  label:'Spouse(s)', placeholder:'Type a name…' },
+      { key:'children', label:'Children', placeholder:'Type a name…' },
+    ];
+
+    function slugify(name){
+      return (name||'').toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-')
+        .replace(/-+/g,'-') || 'unnamed';
+    }
+
+    function uniqueId(base, excludeId){
+      let id = base, n = 2;
+      const taken = new Set(people.filter(p=>p.id!==excludeId).map(p=>p.id));
+      while(taken.has(id)){ id = base + '-' + n; n++; }
+      return id;
+    }
+
+    function blankPerson(){
+      return {
+        id:'', name:'', nickname:'',
+        birth:{date:'', place:''}, death:{date:'', place:''},
+        parents:[], spouses:[], children:[],
+        placesLived:[], occupation:'', education:'', military:'',
+        biography:'', photos:[], videos:[], stories:[],
+        updated:''
+      };
+    }
+
+    function newPerson(){
+      current.value = blankPerson();
+      isNew.value = true;
+      dirty.value = false;
+      lastSavedAt.value = '';
+    }
+    newPerson();
+
+    function selectPerson(id){
+      const p = people.find(x=>x.id===id);
+      if(!p) return;
+      current.value = JSON.parse(JSON.stringify(p));
+      isNew.value = false;
+      dirty.value = false;
+      lastSavedAt.value = current.value.updated ? ('as of ' + current.value.updated) : '';
+    }
+
+    function touch(){ dirty.value = true; }
+
+    function nameOf(id){
+      const p = people.find(x=>x.id===id);
+      if(p) return p.name;
+      if(current.value && current.value.id === id) return current.value.name;
+      return id;
+    }
+    function isStub(id){
+      const p = people.find(x=>x.id===id);
+      return p ? !!p.__stub : false;
+    }
+
+    function addPlace(){
+      if(!placeInput.value) return;
+      current.value.placesLived.push(placeInput.value);
+      placeInput.value = '';
+      touch();
+    }
+
+    function findOrStubByName(name){
+      name = name.trim();
+      if(!name) return null;
+      let existing = people.find(p => p.name.toLowerCase() === name.toLowerCase());
+      if(existing) return existing.id;
+      // create a lightweight stub person so the relationship has somewhere to point
+      const stubId = uniqueId(slugify(name));
+      const stub = blankPerson();
+      stub.id = stubId; stub.name = name; stub.__stub = true;
+      people.push(stub);
+      return stubId;
+    }
+
+    function addRelation(key){
+      const val = relInputs[key];
+      if(!val) return;
+      const id = findOrStubByName(val);
+      if(id && !current.value[key].includes(id)){
+        current.value[key].push(id);
+        touch();
+      }
+      relInputs[key] = '';
+    }
+    function removeRelation(key, id){
+      current.value[key] = current.value[key].filter(x=>x!==id);
+      touch();
+    }
+
+    function lifespan(p){
+      const b = p.birth && p.birth.date ? p.birth.date : '?';
+      const d = p.death && p.death.date ? p.death.date : (p.death && p.death.place ? '' : '');
+      if(!p.death || !p.death.date) return b + ' –';
+      return b + ' – ' + p.death.date;
+    }
+
+    const filteredPeople = computed(()=>{
+      const q = search.value.toLowerCase().trim();
+      const sorted = [...people].sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+      if(!q) return sorted;
+      return sorted.filter(p => (p.name||'').toLowerCase().includes(q));
+    });
+
+    function showToast(msg){
+      toastMsg.value = msg;
+      setTimeout(()=>{ toastMsg.value=''; }, 2600);
+    }
+
+    // ---- reciprocal relationship sync ----
+    const RECIPROCAL = {
+      spouses: 'spouses',
+      parents: 'children',
+      children: 'parents'
+    };
+
+    function syncReciprocals(personId, before, after){
+      // before/after are the previous vs new relation arrays for parents/spouses/children on `current`
+      for(const key of ['parents','spouses','children']){
+        const beforeIds = new Set(before[key]||[]);
+        const afterIds = new Set(after[key]||[]);
+        const added = [...afterIds].filter(id=>!beforeIds.has(id));
+        const removed = [...beforeIds].filter(id=>!afterIds.has(id));
+        const recipKey = RECIPROCAL[key];
+        added.forEach(otherId=>{
+          const other = people.find(p=>p.id===otherId);
+          if(other && !other[recipKey].includes(personId)){
+            other[recipKey].push(personId);
+            other.__dirtySync = true;
+          }
+        });
+        removed.forEach(otherId=>{
+          const other = people.find(p=>p.id===otherId);
+          if(other){
+            other[recipKey] = other[recipKey].filter(x=>x!==personId);
+            other.__dirtySync = true;
+          }
+        });
+      }
+    }
+
+    async function writePersonFile(person){
+      const clean = JSON.parse(JSON.stringify(person));
+      delete clean.__stub; delete clean.__dirtySync;
+      const json = JSON.stringify(clean, null, 2);
+      if(peopleDirHandle.value){
+        const fh = await peopleDirHandle.value.getFileHandle(clean.id + '.json', {create:true});
+        const w = await fh.createWritable();
+        await w.write(json);
+        await w.close();
+      }
+      return json;
+    }
+
+    async function savePerson(){
+      if(!current.value.name) return;
+      const wasNew = isNew.value;
+      const before = { parents: wasNew? [] : (people.find(p=>p.id===current.value.id)?.parents||[]),
+                        spouses: wasNew? [] : (people.find(p=>p.id===current.value.id)?.spouses||[]),
+                        children: wasNew? [] : (people.find(p=>p.id===current.value.id)?.children||[]) };
+
+      if(wasNew){
+        current.value.id = uniqueId(slugify(current.value.name));
+      } else {
+        // name may have changed but keep the same id/filename for stability
+      }
+      current.value.updated = new Date().toISOString().slice(0,16).replace('T',' ');
+
+      const idx = people.findIndex(p=>p.id===current.value.id);
+      const saved = JSON.parse(JSON.stringify(current.value));
+      delete saved.__stub;
+      if(idx>=0) people[idx] = saved; else people.push(saved);
+
+      syncReciprocals(current.value.id, before, current.value);
+
+      // write current + any reciprocally-touched people
+      const toWrite = people.filter(p=>p.id===current.value.id || p.__dirtySync);
+      let wroteToDisk = false;
+      try{
+        if(peopleDirHandle.value){
+          for(const p of toWrite){ await writePersonFile(p); }
+          wroteToDisk = true;
+        }
+      }catch(e){ console.error(e); }
+      toWrite.forEach(p=>{ delete p.__dirtySync; });
+
+      isNew.value = false;
+      dirty.value = false;
+      lastSavedAt.value = current.value.updated;
+
+      if(wroteToDisk){
+        showToast('Saved to people/' + current.value.id + '.json' + (toWrite.length>1 ? ` (+${toWrite.length-1} linked update${toWrite.length>2?'s':''})` : ''));
+      } else {
+        showToast('Saved in the archive. Connect a folder — or use Download JSON — to write it to disk.');
+      }
+    }
+
+    async function downloadCurrent(){
+      if(!current.value.name) return;
+      if(!current.value.id) current.value.id = uniqueId(slugify(current.value.name));
+      const json = JSON.stringify(current.value, null, 2);
+      const blob = new Blob([json], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = current.value.id + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function deletePerson(){
+      if(!current.value.id) return;
+      if(!confirm('Remove ' + current.value.name + ' from the archive? This only removes them from this session — delete the JSON file on disk separately if connected.')) return;
+      const idx = people.findIndex(p=>p.id===current.value.id);
+      if(idx>=0) people.splice(idx,1);
+      newPerson();
+    }
+
+    async function connectFolder(){
+      try{
+        const handle = await window.showDirectoryPicker();
+        dirHandle.value = handle;
+        peopleDirHandle.value = await handle.getDirectoryHandle('people', {create:true});
+        await loadFromDirectory(peopleDirHandle.value);
+        showToast('Connected. Loaded ' + people.length + ' people from ' + handle.name + '/people.');
+      }catch(e){
+        if(e.name !== 'AbortError') console.error(e);
+      }
+    }
+
+    async function loadFromDirectory(peopleDir){
+      people.length = 0;
+      for await (const [name, handle] of peopleDir.entries()){
+        if(handle.kind==='file' && name.endsWith('.json')){
+          try{
+            const file = await handle.getFile();
+            const text = await file.text();
+            const obj = JSON.parse(text);
+            if(!obj.parents) obj.parents=[]; if(!obj.spouses) obj.spouses=[]; if(!obj.children) obj.children=[];
+            if(!obj.placesLived) obj.placesLived=[];
+            if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
+            people.push(obj);
+          }catch(e){ console.error('Could not parse', name, e); }
+        }
+      }
+    }
+
+    function importFiles(e){
+      const files = Array.from(e.target.files||[]);
+      let count = 0;
+      files.forEach(f=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          try{
+            const obj = JSON.parse(reader.result);
+            if(!obj.parents) obj.parents=[]; if(!obj.spouses) obj.spouses=[]; if(!obj.children) obj.children=[];
+            if(!obj.placesLived) obj.placesLived=[];
+            if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
+            const idx = people.findIndex(p=>p.id===obj.id);
+            if(idx>=0) people[idx]=obj; else people.push(obj);
+            count++;
+            if(count===files.length) showToast('Imported ' + count + ' file' + (count>1?'s':'') + '.');
+          }catch(err){ console.error('Bad JSON in', f.name, err); }
+        };
+        reader.readAsText(f);
+      });
+      e.target.value = '';
+    }
+
+    return {
+      people, current, isNew, dirty, search, placeInput, relInputs, relFields,
+      dirHandle, lastSavedAt, toastMsg, fsAccessSupported,
+      filteredPeople, newPerson, selectPerson, touch, nameOf, isStub,
+      addPlace, addRelation, removeRelation, lifespan,
+      savePerson, downloadCurrent, deletePerson, connectFolder, importFiles
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
