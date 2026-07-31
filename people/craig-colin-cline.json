@@ -1,0 +1,34 @@
+{
+  "id": "craig-colin-cline",
+  "name": "Craig Colin Cline",
+  "nickname": "Craig",
+  "birth": {
+    "date": "August 10, 1948",
+    "place": "Buffalo, NY"
+  },
+  "death": {
+    "date": "",
+    "place": ""
+  },
+  "parents": [
+    "steven-g-cline-md",
+    "gloria-cline-stone"
+  ],
+  "spouses": [
+    "janice-b-cline",
+    "elizabeth-m-ward"
+  ],
+  "children": [
+    "alison-beechner",
+    "stevie-mcleod"
+  ],
+  "placesLived": [],
+  "occupation": "Architect, Engineer",
+  "education": "BA, University of Tennessee 1975",
+  "military": "4F",
+  "biography": "Moved to Atlanta when 5 years old.",
+  "photos": [],
+  "videos": [],
+  "stories": [],
+  "updated": "2026-07-31 14:56"
+}
