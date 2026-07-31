@@ -22,13 +22,25 @@
     "alison-beechner",
     "stevie-mcleod"
   ],
-  "placesLived": [],
+  "placesLived": [
+    "1476 Peachtree Battle Ave, Atlanta, GA",
+    "265 Castleair Drive, Kennesaw, GA",
+    "630 Kurtz Road, Marietta, GA",
+    "1383 Northview Ave, Atlanta, GA",
+    "30 5th Street, Atlanta, GA",
+    "231 Hale Street, Atlanta, GA",
+    "10 Sunset Terrace, Asheville, NC"
+  ],
   "occupation": "Architect, Engineer",
-  "education": "BA, University of Tennessee 1975",
+  "education": [
+    "Lovett School and Northside High School, Atlanta, GA (1962–1965)",
+    "BA, University of Tennessee 1975",
+    "Les Écoles d'art américaines de Fontainebleau  1974"
+  ],
   "military": "4F",
-  "biography": "Moved to Atlanta when 5 years old.",
+  "biography": "Born in Buffalo, NY and raised mostly in Atlanta from age five, Craig combined a technical, scientific curiosity with early exposure to art and craftsmanship through his family. He attended the Lovett School and Northside High School (1962–1965), then studied engineering at the University of Tennessee before shifting toward painting and filmmaking, earning his BA in 1975 and studying at Les Écoles d'art américaines de Fontainebleau in 1974. He got his start in film with Storer Studios in the early 1970s, then spent the following decades moving between architecture, engineering, and design — at Environmental Systems Corporation, Nimslo 3D Research, Architectural Design Concepts, his own firm Craig Associates AIA, and finally Pacific Interiors — before retiring to Asheville, NC in 2012.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 14:56"
+  "updated": "2026-07-31 13:31"
 }

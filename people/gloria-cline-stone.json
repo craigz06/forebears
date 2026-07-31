@@ -3,25 +3,33 @@
   "name": "Gloria (Cline) Stone",
   "nickname": "",
   "birth": {
-    "date": "",
-    "place": ""
+    "date": "September 13, 1923",
+    "place": "Buffalo, NY"
   },
   "death": {
-    "date": "",
+    "date": "March 28, 2021",
     "place": ""
   },
   "parents": [],
-  "spouses": [],
+  "spouses": [
+    "steven-g-cline-md",
+    "william-donald-stone-md-dds"
+  ],
   "children": [
     "craig-colin-cline"
   ],
-  "placesLived": [],
-  "occupation": "",
-  "education": "",
+  "placesLived": [
+    "Buffalo, NY",
+    "Ridgeway, Ontario, Canada",
+    "Atlanta, GA",
+    "Lake Allatoona, Woodstock, GA"
+  ],
+  "occupation": "Artist",
+  "education": [],
   "military": "",
-  "biography": "",
+  "biography": "Gloria Helene Claus was born September 13, 1923 in Buffalo, NY, and spent her childhood there and in Ridgeway, Ontario, Canada. She married Dr. Steven G. Cline in 1946 and moved to Atlanta, GA, where they raised three children before divorcing in 1976. In 1967 she married Dr. William D. Stone, and the two spent many years together in Atlanta and at their home on Lake Allatoona in Woodstock, GA. She was an accomplished artist, an avid organic gardener, a world traveler, and a great cook. She died March 28, 2021, at age 97.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": ""
+  "updated": "2026-07-31 13:31"
 }
