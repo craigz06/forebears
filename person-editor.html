@@ -363,11 +363,6 @@
             <input id="f-occ" type="text" v-model.trim="current.occupation" placeholder="What they did" @input="touch">
           </div>
           <div class="field">
-            <label for="f-edu">Education</label>
-            <input id="f-edu" type="text" v-model.trim="current.education" placeholder="School, degree, year" @input="touch">
-          </div>
-
-          <div class="field">
             <label for="f-mil">Military</label>
             <input id="f-mil" type="text" v-model.trim="current.military" placeholder="Branch, years, notes" @input="touch">
           </div>
@@ -385,6 +380,22 @@
             <span class="pill" v-for="(pl, i) in current.placesLived" :key="i">
               {{ pl }}
               <button @click="current.placesLived.splice(i,1); touch()">×</button>
+            </span>
+          </div>
+        </div>
+
+        <!-- Education (repeatable) -->
+        <div class="rel-field">
+          <label>Education</label>
+          <div class="rel-input-row" style="margin-top:8px;">
+            <input type="text" v-model.trim="eduInput" placeholder="School, degree, year — add one at a time"
+                   @keydown.enter.prevent="addEducation">
+            <button class="btn small" @click="addEducation">Add</button>
+          </div>
+          <div class="rel-pills">
+            <span class="pill" v-for="(ed, i) in current.education" :key="i">
+              {{ ed }}
+              <button @click="current.education.splice(i,1); touch()">×</button>
             </span>
           </div>
         </div>
@@ -454,6 +465,7 @@ createApp({
     const dirty = ref(false);
     const search = ref('');
     const placeInput = ref('');
+    const eduInput = ref('');
     const relInputs = reactive({ parents:'', spouses:'', children:'' });
     const dirHandle = ref(null);
     const peopleDirHandle = ref(null);
@@ -486,21 +498,33 @@ createApp({
         id:'', name:'', nickname:'',
         birth:{date:'', place:''}, death:{date:'', place:''},
         parents:[], spouses:[], children:[],
-        placesLived:[], occupation:'', education:'', military:'',
+        placesLived:[], occupation:'', education:[], military:'',
         biography:'', photos:[], videos:[], stories:[],
         updated:''
       };
     }
 
-    function newPerson(){
+    function confirmDiscard(){
+      if(!dirty.value) return true;
+      const who = (current.value && current.value.name) ? current.value.name : 'this entry';
+      return confirm('You have unsaved changes to ' + who + '. Discard them and continue?');
+    }
+
+    function resetToBlank(){
       current.value = blankPerson();
       isNew.value = true;
       dirty.value = false;
       lastSavedAt.value = '';
     }
-    newPerson();
+    resetToBlank();
+
+    function newPerson(){
+      if(!confirmDiscard()) return;
+      resetToBlank();
+    }
 
     function selectPerson(id){
+      if(!confirmDiscard()) return;
       const p = people.find(x=>x.id===id);
       if(!p) return;
       current.value = JSON.parse(JSON.stringify(p));
@@ -508,6 +532,13 @@ createApp({
       dirty.value = false;
       lastSavedAt.value = current.value.updated ? ('as of ' + current.value.updated) : '';
     }
+
+    window.addEventListener('beforeunload', (e)=>{
+      if(dirty.value){
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
 
     function touch(){ dirty.value = true; }
 
@@ -526,6 +557,13 @@ createApp({
       if(!placeInput.value) return;
       current.value.placesLived.push(placeInput.value);
       placeInput.value = '';
+      touch();
+    }
+
+    function addEducation(){
+      if(!eduInput.value) return;
+      current.value.education.push(eduInput.value);
+      eduInput.value = '';
       touch();
     }
 
@@ -681,7 +719,7 @@ createApp({
       if(!confirm('Remove ' + current.value.name + ' from the archive? This only removes them from this session — delete the JSON file on disk separately if connected.')) return;
       const idx = people.findIndex(p=>p.id===current.value.id);
       if(idx>=0) people.splice(idx,1);
-      newPerson();
+      resetToBlank();
     }
 
     async function connectFolder(){
@@ -706,6 +744,8 @@ createApp({
             const obj = JSON.parse(text);
             if(!obj.parents) obj.parents=[]; if(!obj.spouses) obj.spouses=[]; if(!obj.children) obj.children=[];
             if(!obj.placesLived) obj.placesLived=[];
+            if(!obj.education) obj.education=[];
+            else if(typeof obj.education === 'string') obj.education = obj.education ? [obj.education] : [];
             if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
             people.push(obj);
           }catch(e){ console.error('Could not parse', name, e); }
@@ -723,6 +763,8 @@ createApp({
             const obj = JSON.parse(reader.result);
             if(!obj.parents) obj.parents=[]; if(!obj.spouses) obj.spouses=[]; if(!obj.children) obj.children=[];
             if(!obj.placesLived) obj.placesLived=[];
+            if(!obj.education) obj.education=[];
+            else if(typeof obj.education === 'string') obj.education = obj.education ? [obj.education] : [];
             if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
             const idx = people.findIndex(p=>p.id===obj.id);
             if(idx>=0) people[idx]=obj; else people.push(obj);
@@ -736,10 +778,10 @@ createApp({
     }
 
     return {
-      people, current, isNew, dirty, search, placeInput, relInputs, relFields,
+      people, current, isNew, dirty, search, placeInput, eduInput, relInputs, relFields,
       dirHandle, lastSavedAt, toastMsg, fsAccessSupported,
       filteredPeople, newPerson, selectPerson, touch, nameOf, isStub,
-      addPlace, addRelation, removeRelation, lifespan,
+      addPlace, addEducation, addRelation, removeRelation, lifespan,
       savePerson, downloadCurrent, deletePerson, connectFolder, importFiles
     };
   }
