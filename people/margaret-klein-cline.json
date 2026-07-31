@@ -1,0 +1,19 @@
+{
+  "id": "margaret-klein-cline",
+  "name": "Margaret Klein Cline",
+  "nickname": "Manci",
+  "birth": { "date": "May 10, 1894", "place": "Kunszentmárton, Hungary" },
+  "death": { "date": "June 25, 1991", "place": "Strongsville, OH" },
+  "parents": ["samuel-klein", "rosa-klein"],
+  "spouses": ["alexander-sandor-cline-md"],
+  "children": ["steven-g-cline-md", "paul-alexander-cline"],
+  "placesLived": ["Budapest, Hungary", "Buffalo, NY"],
+  "occupation": "",
+  "education": [],
+  "military": "",
+  "biography": "Margaret \"Manci\" Klein was born May 10, 1894 in Kunszentmárton, Hungary, the sister of portrait painter Arpad Kallos. In 1923 she emigrated from Budapest with her young sons, Steven and Paul, sailing from Cherbourg on the Mauritania to join her husband, Sandor Cline, who had gone ahead to Buffalo, NY. She died June 25, 1991 in Strongsville, OH.",
+  "photos": [],
+  "videos": [],
+  "stories": [],
+  "updated": "2026-07-31 15:30"
+}

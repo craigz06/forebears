@@ -10,7 +10,7 @@
     "date": "November 26, 1960",
     "place": "Tuckahoe, NY"
   },
-  "parents": [],
+  "parents": ["samuel-klein", "rosa-klein"],
   "spouses": [],
   "children": [],
   "placesLived": [
@@ -28,5 +28,5 @@
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 13:31"
+  "updated": "2026-07-31 15:30"
 }

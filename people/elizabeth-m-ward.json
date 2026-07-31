@@ -10,7 +10,7 @@
     "date": "",
     "place": ""
   },
-  "parents": [],
+  "parents": ["clifford-j-ward", "jacqueline-coleman-ward"],
   "spouses": [
     "craig-colin-cline"
   ],
@@ -22,11 +22,11 @@
     "Queens, NY"
   ],
   "occupation": "Epidemeologist",
-  "education": "Univ. of Pennsylvania, Phd.",
+  "education": ["Univ. of Pennsylvania, PhD"],
   "military": "Coast Guard, Captain",
-  "biography": "",
+  "biography": "Raised in a one-bedroom garden apartment, Liz built a career as a lead epidemiologist and legal consultant, taking on corporate malfeasance to protect public health. She married Craig Cline in 2010 in Marietta, GA, and the two moved to Asheville, NC in 2012 — blending her children, Nicolas and Maria, with Craig's daughters, Alison and Stevie.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 15:33"
+  "updated": "2026-07-31 15:30"
 }

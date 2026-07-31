@@ -10,7 +10,7 @@
     "date": "November 3, 2010",
     "place": "Atlanta, GA"
   },
-  "parents": [],
+  "parents": ["alexander-sandor-cline-md", "margaret-klein-cline"],
   "spouses": [
     "gloria-cline-stone"
   ],
@@ -35,5 +35,5 @@
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 13:31"
+  "updated": "2026-07-31 15:30"
 }

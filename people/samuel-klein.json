@@ -1,0 +1,19 @@
+{
+  "id": "samuel-klein",
+  "name": "Samuel Klein",
+  "nickname": "",
+  "birth": { "date": "1870", "place": "" },
+  "death": { "date": "1939", "place": "Budapest, Hungary" },
+  "parents": [],
+  "spouses": ["rosa-klein"],
+  "children": ["arpad-kallos", "margaret-klein-cline"],
+  "placesLived": [],
+  "occupation": "",
+  "education": [],
+  "military": "",
+  "biography": "Craig's great-grandfather on his father's side; father of portrait painter Arpad Kallos and of Margaret Klein Cline.",
+  "photos": [],
+  "videos": [],
+  "stories": [],
+  "updated": "2026-07-31 15:30"
+}

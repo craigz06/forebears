@@ -10,7 +10,7 @@
     "date": "March 28, 2021",
     "place": ""
   },
-  "parents": [],
+  "parents": ["frank-louis-claus", "helene-emily-oneil-claus"],
   "spouses": [
     "steven-g-cline-md",
     "william-donald-stone-md-dds"
@@ -31,5 +31,5 @@
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 13:31"
+  "updated": "2026-07-31 15:30"
 }

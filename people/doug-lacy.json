@@ -1,27 +1,27 @@
 {
-  "id": "maria-steenland",
-  "name": "Maria Steenland",
+  "id": "doug-lacy",
+  "name": "Doug Lacy",
   "nickname": "",
   "birth": {
     "date": "",
-    "place": "Atlanta, GA"
+    "place": ""
   },
   "death": {
     "date": "",
     "place": ""
   },
-  "parents": [
-    "elizabeth-m-ward"
+  "parents": [],
+  "spouses": [
+    "carol-leslie-cline-lacy"
   ],
-  "spouses": [],
   "children": [],
   "placesLived": [],
   "occupation": "",
   "education": [],
   "military": "",
-  "biography": "Elizabeth (Liz) Ward's daughter, born in Atlanta, Georgia.",
+  "biography": "",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 15:30"
+  "updated": ""
 }

@@ -3,25 +3,33 @@
   "name": "Stevie McLeod",
   "nickname": "",
   "birth": {
-    "date": "",
-    "place": ""
+    "date": "March 31, 1984",
+    "place": "Marietta, GA"
   },
   "death": {
     "date": "",
     "place": ""
   },
   "parents": [
-    "craig-colin-cline"
+    "craig-colin-cline",
+    "janice-b-cline"
   ],
   "spouses": [],
   "children": [],
-  "placesLived": [],
-  "occupation": "",
-  "education": "",
+  "placesLived": [
+    "Atlanta, GA",
+    "Kennesaw, GA",
+    "Boston, MA",
+    "Durham, NC"
+  ],
+  "occupation": "Graphic Artist",
+  "education": [
+    "Kennesaw State University"
+  ],
   "military": "",
-  "biography": "",
+  "biography": "Craig's youngest daughter. She grew up on Kurtz Road, where she and her sister Alison helped their father build a home addition. She's had a lifelong interest in computers, and enjoys costuming — she's attended Dragon Con, and one of her costumes was featured in PlayStation Magazine.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": ""
+  "updated": "2026-07-31 19:39"
 }

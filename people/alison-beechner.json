@@ -1,7 +1,7 @@
 {
   "id": "alison-beechner",
   "name": "Alison Beechner",
-  "nickname": "",
+  "nickname": "Ally",
   "birth": {
     "date": "",
     "place": ""
@@ -10,18 +10,16 @@
     "date": "",
     "place": ""
   },
-  "parents": [
-    "craig-colin-cline"
-  ],
+  "parents": ["craig-colin-cline", "janice-b-cline"],
   "spouses": [],
   "children": [],
-  "placesLived": [],
+  "placesLived": ["Canton, GA"],
   "occupation": "",
-  "education": "",
+  "education": [],
   "military": "",
-  "biography": "",
+  "biography": "Craig's daughter. She married Paul Beechner, and they live in Canton, GA with their three children — Arianna, Everly, and Lucas.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": ""
+  "updated": "2026-07-31 15:30"
 }

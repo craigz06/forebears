@@ -4,7 +4,7 @@
   "nickname": "",
   "birth": {
     "date": "",
-    "place": ""
+    "place": "Kingsport, TN"
   },
   "death": {
     "date": "",
@@ -14,14 +14,14 @@
   "spouses": [
     "craig-colin-cline"
   ],
-  "children": [],
-  "placesLived": [],
+  "children": ["alison-beechner", "stevie-mcleod"],
+  "placesLived": ["Marietta, GA"],
   "occupation": "",
-  "education": "",
+  "education": [],
   "military": "",
-  "biography": "",
+  "biography": "Born in Kingsport, TN. She married Craig Cline in 1976 in Atlanta, GA, and the two had two daughters, Alison and Stevie, before divorcing in 2000 in Marietta, GA, where she still lives.",
   "photos": [],
   "videos": [],
   "stories": [],
-  "updated": ""
+  "updated": "2026-07-31 15:30"
 }
