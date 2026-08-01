@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forebears — Person</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<style>
+  :root{
+    --paper:#F2E8D5;
+    --paper-dim:#EADFC6;
+    --card:#FBF6EA;
+    --ink:#2B2118;
+    --ink-soft:#5A4C3C;
+    --walnut:#5C4030;
+    --walnut-dark:#3E2B20;
+    --brass:#9C7A2E;
+    --brass-bright:#B8923F;
+    --sage:#6F7C5D;
+    --rust:#9C4A35;
+    --thread:#C9B892;
+    --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #FBF3DE 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, serif;
+    min-height:100vh;
+  }
+  ::selection{ background:var(--thread); color:var(--walnut-dark); }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:var(--thread); border-radius:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  a{ color:var(--brass); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 48px; border-bottom:1px solid var(--line);
+    background: linear-gradient(180deg, #EFE3C6, #E8D9B6);
+  }
+  @media (max-width:640px){ .topbar{ padding:16px 18px; } }
+  .brand{ font-family:'Fraunces', serif; font-weight:600; font-style:italic; font-size:1.4rem; color:var(--walnut-dark); }
+  .brand a{ color:inherit; }
+  .brand-sub{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); }
+
+  .main{ padding:44px 48px 80px; max-width:960px; margin:0 auto; }
+  @media (max-width: 640px){ .main{ padding:28px 18px 60px; } }
+
+  .hero-prompt{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.18; color:var(--walnut-dark); margin:0 0 6px;
+  }
+  .hero-sub{ font-size:0.95rem; color:var(--ink-soft); margin:0 0 30px; max-width:60ch; line-height:1.55; }
+
+  .hero-photo{
+    width:100%; height:clamp(260px, 42vw, 460px);
+    border-radius:12px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); margin-bottom:22px; background:var(--paper-dim);
+  }
+  .hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+
+  .empty-note{ font-size:0.9rem; color:var(--ink-soft); line-height:1.6; }
+
+  .ledger{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); position:relative; padding:34px 36px 30px; margin-bottom:28px;
+  }
+  .ledger::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:46px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 26px, var(--thread) 26px 27px);
+    opacity:0.35; border-radius:10px 0 0 10px; pointer-events:none;
+  }
+  .ledger-head{ padding-left:34px; margin-bottom:20px; border-bottom:1px dashed var(--line); padding-bottom:18px; }
+  .ledger-id{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); letter-spacing:0.03em; }
+  .ledger-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--walnut-dark); margin:2px 0 4px; }
+  .ledger-dates{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+
+  .content-inner{ padding-left:34px; }
+  .bio{ font-size:1rem; line-height:1.7; margin:0 0 22px; max-width:70ch; }
+
+  .facts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px 28px; margin-bottom:8px; }
+  @media (max-width:640px){ .facts-grid{ grid-template-columns:1fr; } }
+  .fact{ margin-bottom:6px; }
+  .fact label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.09em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;
+  }
+  .fact .val{ font-size:0.95rem; line-height:1.5; }
+  .fact ul{ margin:2px 0 0; padding-left:18px; }
+  .fact li{ margin-bottom:2px; }
+
+  .section-label{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1.15rem;
+    color:var(--walnut); margin:26px 0 12px; padding-left:34px;
+  }
+
+  .family-groups{ padding-left:34px; display:flex; flex-direction:column; gap:16px; margin-bottom:6px; }
+  .family-group-label{
+    font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:8px;
+  }
+  .family-pills{ display:flex; flex-wrap:wrap; gap:10px; }
+  .family-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#fff; border:1px solid var(--thread); border-radius:999px;
+    padding:5px 14px 5px 5px; font-size:0.88rem; color:var(--walnut-dark);
+  }
+  .family-pill .avatar{
+    width:26px; height:26px; border-radius:50%; object-fit:cover; border:1px solid var(--line); background:var(--paper-dim);
+  }
+  .family-pill .avatar.placeholder{
+    width:26px; height:26px; border-radius:50%; background:var(--paper-dim);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-soft);
+    font-family:'JetBrains Mono',monospace; font-size:0.6rem; border:1px solid var(--line);
+  }
+  .family-pill .tag{ font-size:0.7rem; color:var(--ink-soft); font-style:italic; }
+
+  .gallery{
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:10px;
+  }
+  .gallery figure{ margin:0; }
+  .gallery img{
+    width:100%; height:150px; object-fit:cover; border-radius:8px; border:1px solid var(--line);
+    box-shadow:var(--shadow); cursor:zoom-in; display:block; background:var(--paper-dim);
+    transition:transform .15s ease;
+  }
+  .gallery img:hover{ transform:translateY(-2px); }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(43,33,24,0.85); display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:40px; cursor:zoom-out;
+  }
+  .lightbox img{ max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,0.5); cursor:default; }
+  .lightbox-close{
+    position:fixed; top:20px; right:24px; width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(251,246,234,0.5); background:rgba(43,33,24,0.6); color:var(--paper);
+    font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close:hover{ background:rgba(43,33,24,0.9); }
+
+  .eras-grid{
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px;
+  }
+  .era-tile{
+    display:block; border-radius:10px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); background:var(--card); color:inherit; transition:transform .12s ease;
+  }
+  .era-tile:hover{ transform:translateY(-2px); text-decoration:none; }
+  .era-tile .era-thumb{ width:100%; height:120px; object-fit:cover; display:block; background:var(--paper-dim); }
+  .era-tile .era-thumb.placeholder{ display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:0.7rem; }
+  .era-tile .era-label{ padding:10px 12px; }
+  .era-tile .era-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--walnut-dark); }
+  .era-tile .era-years{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--ink-soft); margin-top:2px; }
+
+  .placeholder-tabs{ display:flex; gap:6px; margin:26px 0 0 34px; }
+  .ph-tab{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:#B8A888; border:1px dashed var(--thread); border-radius:6px; padding:6px 10px;
+  }
+
+  .toast{
+    position:fixed; bottom:22px; right:22px; background:var(--walnut-dark); color:var(--paper);
+    padding:12px 18px; border-radius:8px; font-size:0.85rem; box-shadow:0 10px 30px -8px rgba(0,0,0,0.4);
+    max-width:340px; z-index:50;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div>
+      <div class="brand"><a href="../index.html">Forebears</a></div>
+      <div class="brand-sub">person page</div>
+    </div>
+  </div>
+
+  <main class="main" v-if="!personId">
+    <h1 class="hero-prompt">No person specified.</h1>
+    <p class="hero-sub">Open this page with a person id in the URL, e.g. person.html?id=craig-colin-cline.</p>
+  </main>
+
+  <main class="main" v-else-if="loadError">
+    <h1 class="hero-prompt">Couldn't load this page.</h1>
+    <p class="hero-sub">{{ loadError }} Make sure you're running this through the local server (see README — "Running it locally"), not opened directly from disk.</p>
+  </main>
+
+  <main class="main" v-else-if="!person">
+    <p class="empty-note">Loading people/{{ personId }}.json…</p>
+  </main>
+
+  <main class="main" v-else>
+    <div class="hero-photo" v-if="heroSrc">
+      <img :src="heroSrc" :alt="person.name">
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-head">
+        <div class="ledger-id">people/{{ person.id }}.json</div>
+        <div class="ledger-title">{{ person.name }} <span v-if="person.nickname">"{{ person.nickname }}"</span></div>
+        <div class="ledger-dates">{{ lifespan }}</div>
+      </div>
+
+      <div class="content-inner">
+        <p class="bio" v-if="person.biography">{{ person.biography }}</p>
+
+        <div class="facts-grid">
+          <div class="fact" v-if="person.occupation">
+            <label>Occupation</label>
+            <div class="val">{{ person.occupation }}</div>
+          </div>
+          <div class="fact" v-if="person.military">
+            <label>Military</label>
+            <div class="val">{{ person.military }}</div>
+          </div>
+          <div class="fact" v-if="person.education && person.education.length">
+            <label>Education</label>
+            <ul class="val"><li v-for="(e,i) in person.education" :key="i">{{ e }}</li></ul>
+          </div>
+          <div class="fact" v-if="person.placesLived && person.placesLived.length">
+            <label>Places lived</label>
+            <ul class="val"><li v-for="(p,i) in person.placesLived" :key="i">{{ p }}</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="parentsDisplay.length || spousesDisplay.length || childrenDisplay.length">
+      <div class="section-label">Family</div>
+      <div class="family-groups">
+        <div v-if="parentsDisplay.length">
+          <div class="family-group-label">Parents</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in parentsDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+              <span v-if="p.tag" class="tag">({{ p.tag }})</span>
+            </a>
+          </div>
+        </div>
+        <div v-if="spousesDisplay.length">
+          <div class="family-group-label">Spouse(s)</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in spousesDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+            </a>
+          </div>
+        </div>
+        <div v-if="childrenDisplay.length">
+          <div class="family-group-label">Children</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in childrenDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="eraTiles.length">
+      <div class="section-label">Life Eras</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="e in eraTiles" :key="e.id" :href="'era.html?id=' + e.id">
+          <img v-if="e.thumbSrc" class="era-thumb" :src="e.thumbSrc" :alt="e.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ e.title }}</div>
+            <div class="era-years" v-if="e.years">{{ e.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="section-label">Photos</div>
+    <div class="gallery" v-if="person.photos && person.photos.length">
+      <figure v-for="filename in person.photos" :key="filename">
+        <img :src="photoSrc(filename)" :alt="person.name" @click="lightboxUrl = photoSrc(filename)">
+      </figure>
+    </div>
+    <p class="empty-note" style="padding-left:34px;" v-else>
+      No photos yet for this person — add filenames to their photos[] field in people/{{ person.id }}.json.
+    </p>
+
+    <div class="placeholder-tabs">
+      <span class="ph-tab">Timeline — Phase 3</span>
+      <span class="ph-tab">Generated site — Phase 4</span>
+    </div>
+  </main>
+
+  <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
+    <button class="lightbox-close" @click.stop="closeLightbox" aria-label="Close">×</button>
+    <img :src="lightboxUrl" @click.stop>
+  </div>
+
+  <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
+
+</div>
+
+<script>
+const { createApp, reactive, ref, computed, onMounted, onUnmounted } = Vue;
+
+createApp({
+  setup(){
+    const personId = new URLSearchParams(window.location.search).get('id');
+
+    const person = ref(null);
+    const peopleById = reactive({});
+    const eras = reactive([]);
+    const loadError = ref('');
+    const lightboxUrl = ref(null);
+    const toastMsg = ref('');
+
+    function closeLightbox(){ lightboxUrl.value = null; }
+    function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
+    onMounted(()=> window.addEventListener('keydown', onKeydown));
+    onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
+
+    function initials(name){
+      return (name||'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    }
+
+    function photoSrc(filename){ return '../photos/' + filename; }
+
+    const lifespan = computed(()=>{
+      if(!person.value) return '';
+      const b = person.value.birth || {};
+      const d = person.value.death || {};
+      const bStr = [b.date, b.place].filter(Boolean).join(', ');
+      const dStr = [d.date, d.place].filter(Boolean).join(', ');
+      if(!dStr) return 'b. ' + (bStr || '?');
+      return 'b. ' + (bStr || '?') + '  —  d. ' + dStr;
+    });
+
+    function resolvePerson(id, tag){
+      const p = peopleById[id];
+      return {
+        id,
+        name: p ? p.name : id,
+        tag: tag || '',
+        avatarSrc: (p && p.photos && p.photos.length) ? photoSrc(p.photos[0]) : null
+      };
+    }
+
+    const heroSrc = computed(()=>{
+      if(!person.value || !person.value.photos || !person.value.photos.length) return null;
+      return photoSrc(person.value.photos[0]);
+    });
+
+    const parentsDisplay = computed(()=>{
+      if(!person.value) return [];
+      const list = (person.value.parents || []).map(id => resolvePerson(id));
+      (person.value.stepParents || []).forEach(id => list.push(resolvePerson(id, 'step-parent')));
+      return list;
+    });
+    const spousesDisplay = computed(()=> person.value ? (person.value.spouses||[]).map(id => resolvePerson(id)) : []);
+    const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
+
+    const eraTiles = computed(()=> eras.map(e => ({
+      id: e.id,
+      title: e.title || e.id,
+      years: e.years || '',
+      thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null
+    })));
+
+    async function fetchJson(path){
+      const res = await fetch(path, { cache: 'no-store' });
+      if(!res.ok) throw new Error(res.status + ' ' + path);
+      return res.json();
+    }
+
+    async function loadPerson(){
+      try{
+        person.value = await fetchJson('../people/' + personId + '.json');
+      }catch(e){
+        loadError.value = 'Could not load people/' + personId + '.json.';
+        return;
+      }
+
+      // Fetch each related person by id, purely for name + avatar — no directory listing needed.
+      const relatedIds = new Set([
+        ...(person.value.parents||[]), ...(person.value.stepParents||[]),
+        ...(person.value.spouses||[]), ...(person.value.children||[])
+      ]);
+      await Promise.all([...relatedIds].map(async id => {
+        try{ peopleById[id] = await fetchJson('../people/' + id + '.json'); }
+        catch(e){ console.warn('Could not load related person', id); }
+      }));
+
+      // Life eras: read the ids the person lists themselves (same pattern as photos[]).
+      // Fetches run concurrently, so results are collected by id and then
+      // pushed back in the order eras[] lists them — not fetch-completion order.
+      const eraIds = person.value.eras || [];
+      const erasById = {};
+      await Promise.all(eraIds.map(async id => {
+        try{ erasById[id] = await fetchJson('../eras/' + id + '.json'); }
+        catch(e){ console.warn('Could not load era', id); }
+      }));
+      eraIds.forEach(id => { if(erasById[id]) eras.push(erasById[id]); });
+    }
+
+    loadPerson();
+
+    return {
+      personId, person, loadError, lifespan, heroSrc, photoSrc,
+      parentsDisplay, spousesDisplay, childrenDisplay, eraTiles,
+      lightboxUrl, toastMsg, initials, closeLightbox
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

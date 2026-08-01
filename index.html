@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forebears</title>
+<link rel="stylesheet" href="assets/vendor/fonts/fonts.css">
+<style>
+  :root{
+    --paper:#F2E8D5;
+    --paper-dim:#EADFC6;
+    --card:#FBF6EA;
+    --ink:#2B2118;
+    --ink-soft:#5A4C3C;
+    --walnut:#5C4030;
+    --walnut-dark:#3E2B20;
+    --brass:#9C7A2E;
+    --brass-bright:#B8923F;
+    --sage:#6F7C5D;
+    --rust:#9C4A35;
+    --thread:#C9B892;
+    --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #FBF3DE 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, serif;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:32px;
+  }
+  ::selection{ background:var(--thread); color:var(--walnut-dark); }
+
+  .landing{ width:100%; max-width:760px; text-align:center; }
+
+  .brand{
+    font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+    font-size:clamp(2.4rem, 6vw, 3.4rem); color:var(--walnut-dark); margin:0 0 4px;
+  }
+  .brand-sub{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 44px;
+  }
+
+  .choices{ display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
+  .choice{
+    flex:1 1 260px; max-width:320px;
+    display:block; text-align:left; text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); padding:26px 26px 24px;
+    position:relative; overflow:hidden;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .choice::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:8px;
+    background:var(--thread); opacity:0.6;
+  }
+  .choice:hover{ transform:translateY(-3px); }
+  .choice:hover .choice-title{ color:var(--brass-bright); }
+  .choice-eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:0.64rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:8px;
+  }
+  .choice-title{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.5rem;
+    color:var(--walnut-dark); margin-bottom:8px; transition:color .15s ease;
+  }
+  .choice-desc{ font-size:0.9rem; line-height:1.55; color:var(--ink-soft); }
+
+  .footnote{
+    margin-top:40px; font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    color:var(--ink-soft); opacity:0.8;
+  }
+
+  @media (max-width:560px){ .choices{ flex-direction:column; align-items:stretch; } .choice{ max-width:none; } }
+</style>
+</head>
+<body>
+  <div class="landing">
+    <div class="brand">Forebears</div>
+    <div class="brand-sub">a family archive</div>
+
+    <div class="choices">
+      <a class="choice" href="editor/person-editor.html">
+        <div class="choice-eyebrow">Add / update</div>
+        <div class="choice-title">Edit</div>
+        <div class="choice-desc">Tell me about someone, link relationships, keep the archive current.</div>
+      </a>
+      <a class="choice" href="view/person.html?id=craig-colin-cline">
+        <div class="choice-eyebrow">Browse</div>
+        <div class="choice-title">View the Family</div>
+        <div class="choice-desc">Start with Craig's page — bios, photos, and the people connected to him.</div>
+      </a>
+    </div>
+
+    <div class="footnote">Connect your Forebears folder on the next page to load the archive.</div>
+  </div>
+</body>
+</html>

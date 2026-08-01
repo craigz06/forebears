@@ -14,6 +14,9 @@
     "steven-g-cline-md",
     "gloria-cline-stone"
   ],
+  "stepParents": [
+    "william-donald-stone-md-dds"
+  ],
   "spouses": [
     "janice-b-cline",
     "elizabeth-m-ward"
@@ -39,8 +42,31 @@
   ],
   "military": "4F",
   "biography": "Born in Buffalo, NY and raised mostly in Atlanta from age five, Craig combined a technical, scientific curiosity with early exposure to art and craftsmanship through his family. He attended the Lovett School and Northside High School (1962–1965), then studied engineering at the University of Tennessee before shifting toward painting and filmmaking, earning his BA in 1975 and studying at Les Écoles d'art américaines de Fontainebleau in 1974. He got his start in film with Storer Studios in the early 1970s, then spent the following decades moving between architecture, engineering, and design — at Environmental Systems Corporation, Nimslo 3D Research, Architectural Design Concepts, his own firm Craig Associates AIA, and finally Pacific Interiors — before retiring to Asheville, NC in 2012.",
-  "photos": [],
+  "photos": [
+    "img-4522-600x450.jpeg",
+    "img-4091-600x450.jpeg",
+    "57-craig-3-2s-600x400.jpeg",
+    "superman-600x900.jpeg",
+    "craigyahoo-180x192.jpeg",
+    "dsc-14-600x403.jpeg",
+    "dsc-111-600x402.jpeg",
+    "img-3757-7-600x601.jpeg",
+    "anacola-falls-river-600x550.jpeg",
+    "skinny-dip-falls-600x800.jpeg",
+    "florence-1400x939.jpg",
+    "ny-trip-lovett-kids-copy-870x937.jpg",
+    "airplaine1-i75-1979-900x519.jpg",
+    "lizcraig-2-876x851.jpg",
+    "group-smiling-1400x963.jpg",
+    "img-4170-1400x1050.jpeg",
+    "img-4321-1400x1050.jpeg",
+    "img-4554-1400x1050.jpeg",
+    "fam-frank-helene-claus-small-4-307x217.jpeg",
+    "fam-grand-pop-1898-small-1-394x328.jpeg",
+    "grandkids-1-600x801.jpeg"
+  ],
   "videos": [],
   "stories": [],
-  "updated": "2026-07-31 13:31"
+  "eras": ["childhood-1948-1954", "youth-1955-1964", "high-school-1962-1965", "college-1966-1975", "working-world-1976-2012", "retirement-2012-present"],
+  "updated": "2026-08-02 11:00"
 }
