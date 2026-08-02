@@ -66,6 +66,8 @@
     letter-spacing:0.01em;
     margin:2px 0 2px 6px;
   }
+  .brand a{ color:inherit; text-decoration:none; }
+  .brand a:hover{ text-decoration:underline; }
   .brand-sub{
     font-family:'JetBrains Mono', monospace;
     font-size:0.68rem;
@@ -194,14 +196,14 @@
     font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.09em; text-transform:uppercase;
     color:var(--ink-soft);
   }
-  input[type=text], input[type=date], textarea{
+  input[type=text], input[type=date], textarea, select{
     font-family:'Lora', serif; font-size:0.98rem; color:var(--ink);
     background:transparent;
     border:none; border-bottom:1.5px solid var(--line);
     padding:6px 2px 8px; width:100%;
     transition:border-color .15s ease;
   }
-  input[type=text]:focus, input[type=date]:focus, textarea:focus{
+  input[type=text]:focus, input[type=date]:focus, textarea:focus, select:focus{
     outline:none; border-bottom-color:var(--brass);
   }
   input::placeholder, textarea::placeholder{ color:#B8A888; font-style:italic; }
@@ -258,6 +260,21 @@
     font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
     color:#B8A888; border:1px dashed var(--thread); border-radius:6px; padding:6px 10px;
   }
+
+  /* ---------- Stories ---------- */
+  .story-pill{ cursor:pointer; }
+  .story-panel{
+    margin:14px 34px 24px; padding:20px 22px;
+    background:var(--paper-dim); border:1px solid var(--line); border-radius:8px;
+  }
+  .story-panel .grid2{ padding-left:0; }
+  .story-panel .rel-field{ padding-left:0; }
+  .story-panel-head{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
+  }
+  .story-panel-title{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1rem; color:var(--walnut);
+  }
 </style>
 </head>
 <body>
@@ -266,7 +283,7 @@
   <div class="app">
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
-      <div class="brand">Forebears</div>
+      <div class="brand"><a href="../index.html">Forebears</a></div>
       <div class="brand-sub">the person editor</div>
 
       <div class="connect-box">
@@ -423,6 +440,121 @@
           <textarea id="f-bio" v-model.trim="current.biography" placeholder="Tell their story — anything you remember." @input="touch"></textarea>
         </div>
 
+        <!-- Stories -->
+        <div class="rel-field" v-if="!isNew">
+          <label>Stories</label>
+          <div class="rel-pills" style="margin-top:10px;">
+            <span class="pill story-pill" v-for="id in current.stories" :key="id" @click="editStoryPanel(id)">
+              <span class="thread-icon">⁘</span>
+              {{ storyTitleOf(id) }}
+              <button @click.stop="unlinkStoryFromCurrent(id)">×</button>
+            </span>
+            <span v-if="!current.stories.length" class="empty-note" style="padding:0;">No stories linked yet.</span>
+          </div>
+          <div class="btn-row" style="margin-top:10px;">
+            <button class="btn small" @click="newStory">+ Add Story</button>
+          </div>
+
+          <div class="story-panel" v-if="editingStory">
+            <div class="story-panel-head">
+              <span class="story-panel-title">{{ isNewStory ? 'New story' : 'Editing story' }}</span>
+              <button class="btn small ghost" @click="cancelStory">Cancel</button>
+            </div>
+
+            <div class="grid2">
+              <div class="field full">
+                <label for="s-title">Title</label>
+                <input id="s-title" type="text" v-model.trim="editingStory.title" placeholder="A short name for this story">
+              </div>
+              <div class="field">
+                <label for="s-place">Place</label>
+                <input id="s-place" type="text" v-model.trim="editingStory.place" placeholder="Where it happened">
+              </div>
+              <div class="field">
+                <label for="s-source">Source</label>
+                <input id="s-source" type="text" v-model.trim="editingStory.source" placeholder="memory, letter, interview…">
+              </div>
+              <div class="field">
+                <label for="s-confidence">Confidence</label>
+                <select id="s-confidence" v-model="editingStory.confidence">
+                  <option value="confirmed">Confirmed</option>
+                  <option value="likely">Likely</option>
+                  <option value="uncertain">Uncertain</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field full" style="padding-left:0; margin-bottom:18px;">
+              <label for="s-desc">Description</label>
+              <textarea id="s-desc" v-model.trim="editingStory.description" placeholder="Tell the story."></textarea>
+            </div>
+
+            <!-- Tags -->
+            <div class="rel-field" style="padding-left:0;">
+              <label>Tags</label>
+              <div class="rel-input-row" style="margin-top:8px;">
+                <input type="text" v-model.trim="storyTagInput" placeholder="Add a tag and press Enter"
+                       @keydown.enter.prevent="addStoryTag">
+                <button class="btn small" @click="addStoryTag">Add</button>
+              </div>
+              <div class="rel-pills">
+                <span class="pill" v-for="(t, i) in editingStory.tags" :key="i">
+                  {{ t }}
+                  <button @click="editingStory.tags.splice(i,1)">×</button>
+                </span>
+              </div>
+            </div>
+
+            <!-- People involved -->
+            <div class="rel-field" style="padding-left:0;">
+              <label>People involved</label>
+              <div class="rel-input-row" style="margin-top:8px;">
+                <input type="text" v-model.trim="storyPeopleInput" list="dl-story-people" placeholder="Type a name…"
+                       @keydown.enter.prevent="addStoryPerson('people')">
+                <datalist id="dl-story-people">
+                  <option v-for="p in people" :key="p.id" :value="p.name"></option>
+                </datalist>
+                <button class="btn small" @click="addStoryPerson('people')">Link</button>
+              </div>
+              <div class="rel-pills">
+                <span class="pill" :class="{stub: isStub(id)}" v-for="id in editingStory.people" :key="id">
+                  <span class="thread-icon">⁘</span>
+                  {{ nameOf(id) }}
+                  <button @click="removeStoryPerson('people', id)">×</button>
+                </span>
+              </div>
+            </div>
+
+            <!-- Passed down to -->
+            <div class="rel-field" style="padding-left:0;">
+              <label>Passed down to</label>
+              <div class="rel-input-row" style="margin-top:8px;">
+                <input type="text" v-model.trim="storyPassedToInput" list="dl-story-passedto" placeholder="Type a name…"
+                       @keydown.enter.prevent="addStoryPerson('passed_to')">
+                <datalist id="dl-story-passedto">
+                  <option v-for="p in people" :key="p.id" :value="p.name"></option>
+                </datalist>
+                <button class="btn small" @click="addStoryPerson('passed_to')">Link</button>
+              </div>
+              <div class="rel-pills">
+                <span class="pill" :class="{stub: isStub(id)}" v-for="id in editingStory.passed_to" :key="id">
+                  <span class="thread-icon">⁘</span>
+                  {{ nameOf(id) }}
+                  <button @click="removeStoryPerson('passed_to', id)">×</button>
+                </span>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn primary small" @click="saveStory" :disabled="!editingStory.title">Save Story</button>
+            </div>
+          </div>
+        </div>
+        <div class="rel-field" v-else>
+          <label>Stories</label>
+          <p class="empty-note" style="padding:0;">Save this person first, then you can link stories to them.</p>
+        </div>
+
         <div class="placeholder-tabs">
           <span class="ph-tab">Photos — Phase 2</span>
           <span class="ph-tab">Timeline — Phase 3</span>
@@ -470,6 +602,14 @@ createApp({
     const toastMsg = ref('');
     const fsAccessSupported = ('showDirectoryPicker' in window);
 
+    const stories = reactive([]);         // array of story objects
+    const storiesDirHandle = ref(null);
+    const editingStory = ref(null);       // story object being added/edited in the panel, or null
+    const isNewStory = ref(true);
+    const storyPeopleInput = ref('');
+    const storyPassedToInput = ref('');
+    const storyTagInput = ref('');
+
     const relFields = [
       { key:'parents',  label:'Parents',  placeholder:'Type a name…' },
       { key:'spouses',  label:'Spouse(s)', placeholder:'Type a name…' },
@@ -501,6 +641,27 @@ createApp({
       };
     }
 
+    function blankStory(){
+      return {
+        id:'', type:'story', title:'', place:'',
+        people:[], passed_to:[], description:'',
+        confidence:'confirmed', source:'', original_file:'', tags:[],
+        updated:''
+      };
+    }
+
+    function uniqueStoryId(base, excludeId){
+      let id = base, n = 2;
+      const taken = new Set(stories.filter(s=>s.id!==excludeId).map(s=>s.id));
+      while(taken.has(id)){ id = base + '-' + n; n++; }
+      return id;
+    }
+
+    function storyTitleOf(id){
+      const s = stories.find(x=>x.id===id);
+      return s ? (s.title || id) : id;
+    }
+
     function confirmDiscard(){
       if(!dirty.value) return true;
       const who = (current.value && current.value.name) ? current.value.name : 'this entry';
@@ -512,6 +673,7 @@ createApp({
       isNew.value = true;
       dirty.value = false;
       lastSavedAt.value = '';
+      editingStory.value = null;
     }
     resetToBlank();
 
@@ -528,6 +690,7 @@ createApp({
       isNew.value = false;
       dirty.value = false;
       lastSavedAt.value = current.value.updated ? ('as of ' + current.value.updated) : '';
+      editingStory.value = null;
     }
 
     window.addEventListener('beforeunload', (e)=>{
@@ -590,6 +753,140 @@ createApp({
     function removeRelation(key, id){
       current.value[key] = current.value[key].filter(x=>x!==id);
       touch();
+    }
+
+    // ---- story panel ----
+    function newStory(){
+      const s = blankStory();
+      if(current.value && current.value.id) s.people.push(current.value.id);
+      editingStory.value = s;
+      isNewStory.value = true;
+    }
+
+    function editStoryPanel(id){
+      const s = stories.find(x=>x.id===id);
+      if(!s) return;
+      editingStory.value = JSON.parse(JSON.stringify(s));
+      isNewStory.value = false;
+    }
+
+    function cancelStory(){
+      editingStory.value = null;
+    }
+
+    function addStoryPerson(field){
+      const inputRef = field==='people' ? storyPeopleInput : storyPassedToInput;
+      const val = inputRef.value;
+      if(!val) return;
+      const id = findOrStubByName(val);
+      if(id && !editingStory.value[field].includes(id)){
+        editingStory.value[field].push(id);
+      }
+      inputRef.value = '';
+    }
+    function removeStoryPerson(field, id){
+      editingStory.value[field] = editingStory.value[field].filter(x=>x!==id);
+    }
+
+    function addStoryTag(){
+      if(!storyTagInput.value) return;
+      editingStory.value.tags.push(storyTagInput.value);
+      storyTagInput.value = '';
+    }
+
+    async function writeStoryFile(story){
+      const clean = JSON.parse(JSON.stringify(story));
+      const json = JSON.stringify(clean, null, 2);
+      if(storiesDirHandle.value){
+        const fh = await storiesDirHandle.value.getFileHandle(clean.id + '.json', {create:true});
+        const w = await fh.createWritable();
+        await w.write(json);
+        await w.close();
+      }
+      return json;
+    }
+
+    // Adds/removes storyId from a person's stories[] — in both the saved
+    // `people` list and, if it's the record currently open, `current` too,
+    // so the pill list updates immediately without a re-select.
+    function linkStoryToPerson(personId, storyId, shouldHave){
+      let touched = null;
+      const p = people.find(x=>x.id===personId);
+      if(p){
+        const has = p.stories.includes(storyId);
+        if(shouldHave && !has){ p.stories.push(storyId); touched = p; }
+        else if(!shouldHave && has){ p.stories = p.stories.filter(x=>x!==storyId); touched = p; }
+      }
+      if(current.value && current.value.id===personId){
+        const has = current.value.stories.includes(storyId);
+        if(shouldHave && !has) current.value.stories.push(storyId);
+        else if(!shouldHave && has) current.value.stories = current.value.stories.filter(x=>x!==storyId);
+      }
+      return touched;
+    }
+
+    async function saveStory(){
+      if(!editingStory.value || !editingStory.value.title) return;
+      const wasNew = isNewStory.value;
+      const oldStory = wasNew ? null : stories.find(s=>s.id===editingStory.value.id);
+      const beforePeople = oldStory ? [...oldStory.people] : [];
+
+      if(wasNew){
+        editingStory.value.id = uniqueStoryId(slugify(editingStory.value.title));
+      }
+      editingStory.value.updated = new Date().toISOString().slice(0,16).replace('T',' ');
+
+      const saved = JSON.parse(JSON.stringify(editingStory.value));
+      const idx = stories.findIndex(s=>s.id===saved.id);
+      if(idx>=0) stories[idx] = saved; else stories.push(saved);
+
+      // reciprocal: anyone added to/removed from people[] gets their stories[] updated
+      const beforeSet = new Set(beforePeople);
+      const afterSet = new Set(saved.people);
+      const touchedPeople = [];
+      saved.people.filter(id=>!beforeSet.has(id)).forEach(id=>{
+        const t = linkStoryToPerson(id, saved.id, true);
+        if(t) touchedPeople.push(t);
+      });
+      beforePeople.filter(id=>!afterSet.has(id)).forEach(id=>{
+        const t = linkStoryToPerson(id, saved.id, false);
+        if(t) touchedPeople.push(t);
+      });
+
+      let wroteToDisk = false;
+      try{
+        if(storiesDirHandle.value){
+          await writeStoryFile(saved);
+          for(const p of touchedPeople){ await writePersonFile(p); }
+          wroteToDisk = true;
+        }
+      }catch(e){ console.error(e); }
+
+      editingStory.value = null;
+      if(wroteToDisk){
+        showToast('Saved to stories/' + saved.id + '.json' + (touchedPeople.length ? ` (+${touchedPeople.length} linked person update${touchedPeople.length>1?'s':''})` : ''));
+      } else {
+        showToast('Saved in the archive. Connect a folder to write it to disk.');
+      }
+    }
+
+    async function unlinkStoryFromCurrent(storyId){
+      if(!current.value || !current.value.id) return;
+      const story = stories.find(s=>s.id===storyId);
+      if(!story) return;
+      if(!confirm('Remove "' + (story.title||storyId) + '" from ' + (current.value.name||'this person') + '? This unlinks them but does not delete the story itself.')) return;
+
+      story.people = story.people.filter(id=>id!==current.value.id);
+      linkStoryToPerson(current.value.id, storyId, false);
+
+      const p = people.find(x=>x.id===current.value.id);
+      try{
+        if(storiesDirHandle.value){
+          await writeStoryFile(story);
+          if(p) await writePersonFile(p);
+          showToast('Removed from "' + (story.title||storyId) + '".');
+        }
+      }catch(e){ console.error(e); }
     }
 
     function lifespan(p){
@@ -724,8 +1021,10 @@ createApp({
         const handle = await window.showDirectoryPicker();
         dirHandle.value = handle;
         peopleDirHandle.value = await handle.getDirectoryHandle('people', {create:true});
+        storiesDirHandle.value = await handle.getDirectoryHandle('stories', {create:true});
         await loadFromDirectory(peopleDirHandle.value);
-        showToast('Connected. Loaded ' + people.length + ' people from ' + handle.name + '/people.');
+        await loadStoriesFromDirectory(storiesDirHandle.value);
+        showToast('Connected. Loaded ' + people.length + ' people and ' + stories.length + ' stories from ' + handle.name + '.');
       }catch(e){
         if(e.name !== 'AbortError') console.error(e);
       }
@@ -744,7 +1043,25 @@ createApp({
             if(!obj.education) obj.education=[];
             else if(typeof obj.education === 'string') obj.education = obj.education ? [obj.education] : [];
             if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
+            if(!obj.stories) obj.stories=[];
             people.push(obj);
+          }catch(e){ console.error('Could not parse', name, e); }
+        }
+      }
+    }
+
+    async function loadStoriesFromDirectory(storiesDir){
+      stories.length = 0;
+      for await (const [name, handle] of storiesDir.entries()){
+        if(handle.kind==='file' && name.endsWith('.json')){
+          try{
+            const file = await handle.getFile();
+            const text = await file.text();
+            const obj = JSON.parse(text);
+            if(!obj.people) obj.people=[];
+            if(!obj.passed_to) obj.passed_to=[];
+            if(!obj.tags) obj.tags=[];
+            stories.push(obj);
           }catch(e){ console.error('Could not parse', name, e); }
         }
       }
@@ -763,6 +1080,7 @@ createApp({
             if(!obj.education) obj.education=[];
             else if(typeof obj.education === 'string') obj.education = obj.education ? [obj.education] : [];
             if(!obj.birth) obj.birth={date:'',place:''}; if(!obj.death) obj.death={date:'',place:''};
+            if(!obj.stories) obj.stories=[];
             const idx = people.findIndex(p=>p.id===obj.id);
             if(idx>=0) people[idx]=obj; else people.push(obj);
             count++;
@@ -779,7 +1097,10 @@ createApp({
       dirHandle, lastSavedAt, toastMsg, fsAccessSupported,
       filteredPeople, newPerson, selectPerson, touch, nameOf, isStub,
       addPlace, addEducation, addRelation, removeRelation, lifespan,
-      savePerson, downloadCurrent, deletePerson, connectFolder, importFiles
+      savePerson, downloadCurrent, deletePerson, connectFolder, importFiles,
+      stories, editingStory, isNewStory, storyPeopleInput, storyPassedToInput, storyTagInput,
+      storyTitleOf, newStory, editStoryPanel, cancelStory,
+      addStoryPerson, removeStoryPerson, addStoryTag, saveStory, unlinkStoryFromCurrent
     };
   }
 }).mount('#app');

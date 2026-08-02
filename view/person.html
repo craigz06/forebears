@@ -159,6 +159,23 @@
   .era-tile .era-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--walnut-dark); }
   .era-tile .era-years{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--ink-soft); margin-top:2px; }
 
+  .stories-list{ padding-left:34px; display:flex; flex-direction:column; gap:16px; }
+  .story-card{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .story-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .story-title{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.15rem;
+    color:var(--walnut-dark); margin:0;
+  }
+  .story-meta{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  .story-desc{ font-size:0.95rem; line-height:1.65; margin:0 0 8px; white-space:pre-wrap; }
+  .story-desc.clamped{
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .story-people{ font-size:0.82rem; color:var(--ink-soft); font-style:italic; margin-top:6px; }
+
   .placeholder-tabs{ display:flex; gap:6px; margin:26px 0 0 34px; }
   .ph-tab{
     font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
@@ -293,6 +310,29 @@
       No photos yet for this person — add filenames to their photos[] field in people/{{ person.id }}.json.
     </p>
 
+    <div v-if="stories.length">
+      <div class="section-label">Stories</div>
+      <div class="stories-list">
+        <article class="story-card" v-for="s in stories" :key="s.id">
+          <div class="story-card-head">
+            <h3 class="story-title">{{ s.title }}</h3>
+            <span class="story-meta" v-if="s.place">{{ s.place }}</span>
+          </div>
+          <p class="story-desc" :class="{clamped: !expandedStories[s.id] && isLong(s.description)}">{{ s.description }}</p>
+          <button class="btn small ghost" v-if="isLong(s.description)" @click="toggleStory(s.id)">
+            {{ expandedStories[s.id] ? 'Show less' : 'Read more' }}
+          </button>
+          <div class="story-people" v-if="storyPeopleNames(s).length">
+            With {{ storyPeopleNames(s).join(', ') }}
+          </div>
+        </article>
+      </div>
+    </div>
+    <div v-else-if="person.stories && person.stories.length">
+      <div class="section-label">Stories</div>
+      <p class="empty-note" style="padding-left:34px;">Loading stories…</p>
+    </div>
+
     <div class="placeholder-tabs">
       <span class="ph-tab">Timeline — Phase 3</span>
       <span class="ph-tab">Generated site — Phase 4</span>
@@ -318,6 +358,8 @@ createApp({
     const person = ref(null);
     const peopleById = reactive({});
     const eras = reactive([]);
+    const stories = reactive([]);
+    const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
     const toastMsg = ref('');
@@ -374,6 +416,14 @@ createApp({
       thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null
     })));
 
+    function isLong(text){ return (text||'').length > 260; }
+    function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
+    function storyPeopleNames(story){
+      return (story.people||[])
+        .filter(id => id !== personId)
+        .map(id => (peopleById[id] ? peopleById[id].name : id));
+    }
+
     async function fetchJson(path){
       const res = await fetch(path, { cache: 'no-store' });
       if(!res.ok) throw new Error(res.status + ' ' + path);
@@ -408,6 +458,23 @@ createApp({
         catch(e){ console.warn('Could not load era', id); }
       }));
       eraIds.forEach(id => { if(erasById[id]) eras.push(erasById[id]); });
+
+      // Stories: same order-preserving pattern as eras.
+      const storyIds = person.value.stories || [];
+      const storiesById = {};
+      await Promise.all(storyIds.map(async id => {
+        try{ storiesById[id] = await fetchJson('../stories/' + id + '.json'); }
+        catch(e){ console.warn('Could not load story', id); }
+      }));
+      storyIds.forEach(id => { if(storiesById[id]) stories.push(storiesById[id]); });
+
+      // Fetch names for anyone in a story's people[] not already loaded above.
+      const storyPersonIds = new Set(stories.flatMap(s => s.people || []));
+      const unresolvedIds = [...storyPersonIds].filter(id => id !== personId && !peopleById[id]);
+      await Promise.all(unresolvedIds.map(async id => {
+        try{ peopleById[id] = await fetchJson('../people/' + id + '.json'); }
+        catch(e){ console.warn('Could not load story participant', id); }
+      }));
     }
 
     loadPerson();
@@ -415,6 +482,7 @@ createApp({
     return {
       personId, person, loadError, lifespan, heroSrc, photoSrc,
       parentsDisplay, spousesDisplay, childrenDisplay, eraTiles,
+      stories, expandedStories, isLong, toggleStory, storyPeopleNames,
       lightboxUrl, toastMsg, initials, closeLightbox
     };
   }

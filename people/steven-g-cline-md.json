@@ -10,7 +10,10 @@
     "date": "November 3, 2010",
     "place": "Atlanta, GA"
   },
-  "parents": ["alexander-sandor-cline-md", "margaret-klein-cline"],
+  "parents": [
+    "alexander-sandor-cline-md",
+    "margaret-klein-cline"
+  ],
   "spouses": [
     "gloria-cline-stone"
   ],
@@ -34,6 +37,8 @@
   "biography": "Dr. Steven George Cline was born October 17, 1922 in Budapest, Hungary, and immigrated to the United States in 1928 with his mother, Margaret, and older brother Paul, following his father, Dr. Alexander (Sandor) Cline, who had arrived earlier; the family settled in Buffalo, NY. He attended Riverside High School before earning his medical degree at the University of Buffalo Medical School, followed by an internship at Baltimore City Hospitals and a radiology residency at E.J. Meyer Memorial Hospital. After service in WWII and the Korean War, he settled in Atlanta, working as Associate Radiologist at Georgia Baptist Hospital (1954–1963) and then as Chief of Radiology at South Fulton Hospital from its 1963 opening until his 1988 retirement. A member of Druid Hills Country Club for 53 years, he played tennis into his 80s and enjoyed reading, travel, and card games. He died November 3, 2010, in Atlanta, at age 88.",
   "photos": [],
   "videos": [],
-  "stories": [],
+  "stories": [
+    "good-outweighing-the-bad"
+  ],
   "updated": "2026-07-31 15:30"
 }
