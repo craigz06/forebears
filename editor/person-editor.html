@@ -604,6 +604,13 @@ createApp({
 
     const stories = reactive([]);         // array of story objects
     const storiesDirHandle = ref(null);
+    const erasDirHandle = ref(null);
+    const photosDirHandle = ref(null);
+    const carsDirHandle = ref(null);
+    const artDirHandle = ref(null);
+    const architectureDirHandle = ref(null);
+    const inventionsDirHandle = ref(null);
+    const booksDirHandle = ref(null);
     const editingStory = ref(null);       // story object being added/edited in the panel, or null
     const isNewStory = ref(true);
     const storyPeopleInput = ref('');
@@ -798,12 +805,34 @@ createApp({
       const clean = JSON.parse(JSON.stringify(story));
       const json = JSON.stringify(clean, null, 2);
       if(storiesDirHandle.value){
-        const fh = await storiesDirHandle.value.getFileHandle(clean.id + '.json', {create:true});
-        const w = await fh.createWritable();
-        await w.write(json);
-        await w.close();
+        await writeJsonToDir(storiesDirHandle.value, clean.id + '.json', json);
       }
       return json;
+    }
+
+    async function writeJsonToDir(dirHandle, filename, json){
+      if(!dirHandle) return;
+      const fh = await dirHandle.getFileHandle(filename, {create:true});
+      const w = await fh.createWritable();
+      await w.write(json);
+      await w.close();
+      try{ await regenerateIndex(dirHandle); }catch(e){ console.warn('Could not regenerate index for', filename, e); }
+    }
+
+    async function regenerateIndex(dirHandle){
+      if(!dirHandle) return;
+      const files = [];
+      for await (const [name, handle] of dirHandle.entries()){
+        if(handle.kind === 'file' && name !== 'index.json') files.push(name);
+      }
+      files.sort();
+      const idx = { files };
+      try{
+        const fh = await dirHandle.getFileHandle('index.json', {create:true});
+        const w = await fh.createWritable();
+        await w.write(JSON.stringify(idx, null, 2));
+        await w.close();
+      }catch(e){ console.error('Failed to write index.json', e); }
     }
 
     // Adds/removes storyId from a person's stories[] — in both the saved
@@ -868,6 +897,11 @@ createApp({
       } else {
         showToast('Saved in the archive. Connect a folder to write it to disk.');
       }
+      // ensure other content folders have up-to-date indexes after any save
+      try{
+        const otherDirs = [erasDirHandle, photosDirHandle, carsDirHandle, artDirHandle, architectureDirHandle, inventionsDirHandle, booksDirHandle];
+        await Promise.all(otherDirs.map(async dh => { if(dh && dh.value) try{ await regenerateIndex(dh.value); }catch(e){} }));
+      }catch(e){ console.warn('Could not refresh other indexes', e); }
     }
 
     async function unlinkStoryFromCurrent(storyId){
@@ -945,10 +979,7 @@ createApp({
       delete clean.__stub; delete clean.__dirtySync;
       const json = JSON.stringify(clean, null, 2);
       if(peopleDirHandle.value){
-        const fh = await peopleDirHandle.value.getFileHandle(clean.id + '.json', {create:true});
-        const w = await fh.createWritable();
-        await w.write(json);
-        await w.close();
+        await writeJsonToDir(peopleDirHandle.value, clean.id + '.json', json);
       }
       return json;
     }
@@ -994,6 +1025,11 @@ createApp({
       } else {
         showToast('Saved in the archive. Connect a folder — or use Download JSON — to write it to disk.');
       }
+      // ensure content folder indexes are refreshed on every save
+      try{
+        const otherDirs = [erasDirHandle, photosDirHandle, carsDirHandle, artDirHandle, architectureDirHandle, inventionsDirHandle, booksDirHandle];
+        await Promise.all(otherDirs.map(async dh => { if(dh && dh.value) try{ await regenerateIndex(dh.value); }catch(e){} }));
+      }catch(e){ console.warn('Could not refresh other indexes after savePerson', e); }
     }
 
     async function downloadCurrent(){
@@ -1022,8 +1058,19 @@ createApp({
         dirHandle.value = handle;
         peopleDirHandle.value = await handle.getDirectoryHandle('people', {create:true});
         storiesDirHandle.value = await handle.getDirectoryHandle('stories', {create:true});
+        erasDirHandle.value = await handle.getDirectoryHandle('eras', {create:true});
+        photosDirHandle.value = await handle.getDirectoryHandle('photos', {create:true});
+        carsDirHandle.value = await handle.getDirectoryHandle('cars', {create:true});
+        artDirHandle.value = await handle.getDirectoryHandle('art', {create:true});
+        architectureDirHandle.value = await handle.getDirectoryHandle('architecture', {create:true});
+        inventionsDirHandle.value = await handle.getDirectoryHandle('inventions', {create:true});
+        booksDirHandle.value = await handle.getDirectoryHandle('books', {create:true});
         await loadFromDirectory(peopleDirHandle.value);
         await loadStoriesFromDirectory(storiesDirHandle.value);
+        // ensure indexes exist for content folders
+        try{ await regenerateIndex(storiesDirHandle.value); }catch(e){}
+        try{ await regenerateIndex(erasDirHandle.value); }catch(e){}
+        try{ await regenerateIndex(photosDirHandle.value); }catch(e){}
         showToast('Connected. Loaded ' + people.length + ' people and ' + stories.length + ' stories from ' + handle.name + '.');
       }catch(e){
         if(e.name !== 'AbortError') console.error(e);

@@ -6,6 +6,7 @@
 <title>Forebears — Person</title>
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
+<script src="person-data.js"></script>
 <style>
   :root{
     --paper:#F2E8D5;
@@ -65,6 +66,7 @@
     box-shadow:var(--shadow); margin-bottom:22px; background:var(--paper-dim);
   }
   .hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+  .hero-photo video{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
 
   .empty-note{ font-size:0.9rem; color:var(--ink-soft); line-height:1.6; }
 
@@ -214,8 +216,9 @@
   </main>
 
   <main class="main" v-else>
-    <div class="hero-photo" v-if="heroSrc">
-      <img :src="heroSrc" :alt="person.name">
+    <div class="hero-photo" v-if="heroMedia">
+      <video v-if="heroIsVideo" :src="photoSrc(heroMedia)" autoplay muted loop playsinline></video>
+      <img v-else :src="photoSrc(heroMedia)" :alt="person.name">
     </div>
 
     <div class="ledger">
@@ -300,20 +303,12 @@
       </div>
     </div>
 
-    <div class="section-label">Photos</div>
-    <div class="gallery" v-if="person.photos && person.photos.length">
-      <figure v-for="filename in person.photos" :key="filename">
-        <img :src="photoSrc(filename)" :alt="person.name" @click="lightboxUrl = photoSrc(filename)">
-      </figure>
-    </div>
-    <p class="empty-note" style="padding-left:34px;" v-else>
-      No photos yet for this person — add filenames to their photos[] field in people/{{ person.id }}.json.
-    </p>
+    
 
-    <div v-if="stories.length">
+    <div v-if="sections.stories && sections.stories.length">
       <div class="section-label">Stories</div>
       <div class="stories-list">
-        <article class="story-card" v-for="s in stories" :key="s.id">
+        <article class="story-card" v-for="s in sections.stories" :key="s.id">
           <div class="story-card-head">
             <h3 class="story-title">{{ s.title }}</h3>
             <span class="story-meta" v-if="s.place">{{ s.place }}</span>
@@ -328,15 +323,29 @@
         </article>
       </div>
     </div>
-    <div v-else-if="person.stories && person.stories.length">
-      <div class="section-label">Stories</div>
-      <p class="empty-note" style="padding-left:34px;">Loading stories…</p>
-    </div>
 
     <div class="placeholder-tabs">
       <span class="ph-tab">Timeline — Phase 3</span>
       <span class="ph-tab">Generated site — Phase 4</span>
     </div>
+    
+    <!-- Generic category sections (cars, art, architecture, inventions, books, etc.) -->
+    <template v-for="(items, key) in sections" :key="key">
+      <div v-if="['eras','stories','photos'].includes(key)" style="display:none"></div>
+      <div v-else-if="items && items.length">
+        <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
+        <div class="eras-grid">
+          <a class="era-tile" v-for="r in items" :key="r.id" :href="(r.id ? (key + '.html?record=' + r.id) : '#')">
+            <img v-if="(r.images && r.images.length) || (r.photos && r.photos.length)" class="era-thumb" :src="photoSrc((r.images||r.photos)[0])" :alt="r.title">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">{{ r.title || r.id }}</div>
+              <div class="era-years" v-if="r.date">{{ r.date }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </template>
   </main>
 
   <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
@@ -354,25 +363,19 @@ const { createApp, reactive, ref, computed, onMounted, onUnmounted } = Vue;
 createApp({
   setup(){
     const personId = new URLSearchParams(window.location.search).get('id');
-
     const person = ref(null);
     const peopleById = reactive({});
-    const eras = reactive([]);
-    const stories = reactive([]);
+    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
     const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
-    const toastMsg = ref('');
 
     function closeLightbox(){ lightboxUrl.value = null; }
     function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
     onMounted(()=> window.addEventListener('keydown', onKeydown));
     onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
 
-    function initials(name){
-      return (name||'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    }
-
+    function initials(name){ return (name||'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
     function photoSrc(filename){ return '../photos/' + filename; }
 
     const lifespan = computed(()=>{
@@ -387,18 +390,18 @@ createApp({
 
     function resolvePerson(id, tag){
       const p = peopleById[id];
-      return {
-        id,
-        name: p ? p.name : id,
-        tag: tag || '',
-        avatarSrc: (p && p.photos && p.photos.length) ? photoSrc(p.photos[0]) : null
-      };
+      return { id, name: p ? p.name : id, tag: tag || '', avatarSrc: (p && p.photos && p.photos.length) ? photoSrc(p.photos[0]) : null };
     }
 
-    const heroSrc = computed(()=>{
-      if(!person.value || !person.value.photos || !person.value.photos.length) return null;
-      return photoSrc(person.value.photos[0]);
+    const heroMedia = computed(()=>{
+      if(!person.value) return null;
+      // prefer a media file attached via person.photos, otherwise first photo record image
+      if(person.value.photos && person.value.photos.length) return person.value.photos[0];
+      const photoRecords = sections.photos || [];
+      if(photoRecords.length && photoRecords[0].file) return photoRecords[0].file;
+      return null;
     });
+    const heroIsVideo = computed(()=> heroMedia.value && heroMedia.value.toLowerCase().endsWith('.mp4'));
 
     const parentsDisplay = computed(()=>{
       if(!person.value) return [];
@@ -409,82 +412,34 @@ createApp({
     const spousesDisplay = computed(()=> person.value ? (person.value.spouses||[]).map(id => resolvePerson(id)) : []);
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
-    const eraTiles = computed(()=> eras.map(e => ({
-      id: e.id,
-      title: e.title || e.id,
-      years: e.years || '',
-      thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null
-    })));
+    const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
-    function storyPeopleNames(story){
-      return (story.people||[])
-        .filter(id => id !== personId)
-        .map(id => (peopleById[id] ? peopleById[id].name : id));
-    }
+    function storyPeopleNames(story){ return (story.people||[]).filter(id => id !== personId).map(id => (peopleById[id] ? peopleById[id].name : id)); }
 
-    async function fetchJson(path){
-      const res = await fetch(path, { cache: 'no-store' });
-      if(!res.ok) throw new Error(res.status + ' ' + path);
-      return res.json();
-    }
-
-    async function loadPerson(){
+    async function loadAll(){
+      if(!personId) return;
       try{
-        person.value = await fetchJson('../people/' + personId + '.json');
-      }catch(e){
-        loadError.value = 'Could not load people/' + personId + '.json.';
-        return;
-      }
+        const result = await loadPersonRecord(personId);
+        person.value = result.person;
+        Object.assign(sections, result.sections);
+      }catch(e){ loadError.value = 'Could not load people/' + personId + '.json.'; return; }
 
-      // Fetch each related person by id, purely for name + avatar — no directory listing needed.
-      const relatedIds = new Set([
-        ...(person.value.parents||[]), ...(person.value.stepParents||[]),
-        ...(person.value.spouses||[]), ...(person.value.children||[])
-      ]);
+      // Fetch related people for family and story participants
+      const relatedIds = new Set([...(person.value.parents||[]), ...(person.value.stepParents||[]), ...(person.value.spouses||[]), ...(person.value.children||[])]);
+      for(const s of (sections.stories||[])){
+        (s.people||[]).forEach(id=>relatedIds.add(id));
+      }
       await Promise.all([...relatedIds].map(async id => {
-        try{ peopleById[id] = await fetchJson('../people/' + id + '.json'); }
+        try{ peopleById[id] = await (await fetch('../people/' + id + '.json', {cache:'no-store'})).json(); }
         catch(e){ console.warn('Could not load related person', id); }
       }));
-
-      // Life eras: read the ids the person lists themselves (same pattern as photos[]).
-      // Fetches run concurrently, so results are collected by id and then
-      // pushed back in the order eras[] lists them — not fetch-completion order.
-      const eraIds = person.value.eras || [];
-      const erasById = {};
-      await Promise.all(eraIds.map(async id => {
-        try{ erasById[id] = await fetchJson('../eras/' + id + '.json'); }
-        catch(e){ console.warn('Could not load era', id); }
-      }));
-      eraIds.forEach(id => { if(erasById[id]) eras.push(erasById[id]); });
-
-      // Stories: same order-preserving pattern as eras.
-      const storyIds = person.value.stories || [];
-      const storiesById = {};
-      await Promise.all(storyIds.map(async id => {
-        try{ storiesById[id] = await fetchJson('../stories/' + id + '.json'); }
-        catch(e){ console.warn('Could not load story', id); }
-      }));
-      storyIds.forEach(id => { if(storiesById[id]) stories.push(storiesById[id]); });
-
-      // Fetch names for anyone in a story's people[] not already loaded above.
-      const storyPersonIds = new Set(stories.flatMap(s => s.people || []));
-      const unresolvedIds = [...storyPersonIds].filter(id => id !== personId && !peopleById[id]);
-      await Promise.all(unresolvedIds.map(async id => {
-        try{ peopleById[id] = await fetchJson('../people/' + id + '.json'); }
-        catch(e){ console.warn('Could not load story participant', id); }
-      }));
     }
 
-    loadPerson();
+    loadAll();
 
-    return {
-      personId, person, loadError, lifespan, heroSrc, photoSrc,
-      parentsDisplay, spousesDisplay, childrenDisplay, eraTiles,
-      stories, expandedStories, isLong, toggleStory, storyPeopleNames,
-      lightboxUrl, toastMsg, initials, closeLightbox
-    };
+    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox };
   }
 }).mount('#app');
 </script>
