@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forebears — Person</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<script src="person-data.js"></script>
+<script>window.__ARCHIVE_DATA__ = {"person":{"id":"stevie-mcleod","name":"Stevie McLeod","nickname":"","birth":{"date":"March 31, 1984","place":"Marietta, GA"},"death":{"date":"","place":""},"parents":["craig-colin-cline","janice-b-cline"],"spouses":[],"children":[],"placesLived":["Atlanta, GA","Kennesaw, GA","Boston, MA","Durham, NC"],"occupation":"Graphic Artist","education":["Kennesaw State University"],"military":"","biography":"Craig's youngest daughter. She grew up on Kurtz Road, where she and her sister Alison helped their father build a home addition. She's had a lifelong interest in computers, and enjoys costuming — she's attended Dragon Con, and one of her costumes was featured in PlayStation Magazine.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 19:39"},"sections":{"eras":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"craig-colin-cline":{"id":"craig-colin-cline","name":"Craig Colin Cline","nickname":"Craig","birth":{"date":"August 10, 1948","place":"Buffalo, NY"},"death":{"date":"","place":""},"parents":["steven-g-cline-md","gloria-cline-stone"],"stepParents":["william-donald-stone-md-dds"],"spouses":["janice-b-cline","elizabeth-m-ward"],"children":["alison-beechner","stevie-mcleod"],"placesLived":["1476 Peachtree Battle Ave, Atlanta, GA","265 Castleair Drive, Kennesaw, GA","630 Kurtz Road, Marietta, GA","1383 Northview Ave, Atlanta, GA","30 5th Street, Atlanta, GA","231 Hale Street, Atlanta, GA","10 Sunset Terrace, Asheville, NC"],"occupation":"Architect, Engineer","education":["Lovett School and Northside High School, Atlanta, GA (1962–1965)","BA, University of Tennessee 1975","Les Écoles d'art américaines de Fontainebleau  1974"],"military":"4F","biography":"Born in Buffalo, NY and raised mostly in Atlanta from age five, Craig combined a technical, scientific curiosity with early exposure to art and craftsmanship through his family. He attended the Lovett School and Northside High School (1962–1965), then studied engineering at the University of Tennessee before shifting toward painting and filmmaking, earning his BA in 1975 and studying at Les Écoles d'art américaines de Fontainebleau in 1974. He got his start in film with Storer Studios in the early 1970s, then spent the following decades moving between architecture, engineering, and design — at Environmental Systems Corporation, Nimslo 3D Research, Architectural Design Concepts, his own firm Craig Associates AIA, and finally Pacific Interiors — before retiring to Asheville, NC in 2012.","photos":["H2.mp4","img-4522-600x450.jpeg","img-4091-600x450.jpeg","57-craig-3-2s-600x400.jpeg","superman-600x900.jpeg","craigyahoo-180x192.jpeg","dsc-14-600x403.jpeg","dsc-111-600x402.jpeg","img-3757-7-600x601.jpeg","anacola-falls-river-600x550.jpeg","skinny-dip-falls-600x800.jpeg","florence-1400x939.jpg","ny-trip-lovett-kids-copy-870x937.jpg","airplaine1-i75-1979-900x519.jpg","lizcraig-2-876x851.jpg","group-smiling-1400x963.jpg","img-4170-1400x1050.jpeg","img-4321-1400x1050.jpeg","img-4554-1400x1050.jpeg","fam-frank-helene-claus-small-4-307x217.jpeg","fam-grand-pop-1898-small-1-394x328.jpeg","grandkids-1-600x801.jpeg"],"videos":[],"stories":["good-outweighing-the-bad","on-death"],"eras":["childhood-1948-1954","youth-1955-1964","high-school-1962-1965","college-1966-1975","working-world-1976-2012","retirement-2012-present"],"updated":"2026-08-02 14:55"},"janice-b-cline":{"id":"janice-b-cline","name":"Janice B. Cline","nickname":"","birth":{"date":"","place":"Kingsport, TN"},"death":{"date":"","place":""},"parents":[],"spouses":["craig-colin-cline"],"children":["alison-beechner","stevie-mcleod"],"placesLived":["Marietta, GA"],"occupation":"","education":[],"military":"","biography":"Born in Kingsport, TN. She married Craig Cline in 1976 in Atlanta, GA, and the two had two daughters, Alison and Stevie, before divorcing in 2000 in Marietta, GA, where she still lives.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}}};</script>
+<style>
+  :root{
+    --paper:#F2E8D5;
+    --paper-dim:#EADFC6;
+    --card:#FBF6EA;
+    --ink:#2B2118;
+    --ink-soft:#5A4C3C;
+    --walnut:#5C4030;
+    --walnut-dark:#3E2B20;
+    --brass:#9C7A2E;
+    --brass-bright:#B8923F;
+    --sage:#6F7C5D;
+    --rust:#9C4A35;
+    --thread:#C9B892;
+    --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #FBF3DE 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, serif;
+    min-height:100vh;
+  }
+  ::selection{ background:var(--thread); color:var(--walnut-dark); }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:var(--thread); border-radius:6px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  a{ color:var(--brass); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 48px; border-bottom:1px solid var(--line);
+    background: linear-gradient(180deg, #EFE3C6, #E8D9B6);
+  }
+  @media (max-width:640px){ .topbar{ padding:16px 18px; } }
+  .brand{ font-family:'Fraunces', serif; font-weight:600; font-style:italic; font-size:1.4rem; color:var(--walnut-dark); }
+  .brand a{ color:inherit; }
+  .brand-sub{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); }
+
+  .main{ padding:44px 48px 80px; max-width:960px; margin:0 auto; }
+  @media (max-width: 640px){ .main{ padding:28px 18px 60px; } }
+
+  .hero-prompt{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.18; color:var(--walnut-dark); margin:0 0 6px;
+  }
+  .hero-sub{ font-size:0.95rem; color:var(--ink-soft); margin:0 0 30px; max-width:60ch; line-height:1.55; }
+
+  .hero-photo{
+    width:100%; height:clamp(260px, 42vw, 460px);
+    border-radius:12px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); margin-bottom:22px; background:var(--paper-dim);
+  }
+  .hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+  .hero-photo video{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+
+  .empty-note{ font-size:0.9rem; color:var(--ink-soft); line-height:1.6; }
+
+  .ledger{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); position:relative; padding:34px 36px 30px; margin-bottom:28px;
+  }
+  .ledger::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:46px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 26px, var(--thread) 26px 27px);
+    opacity:0.35; border-radius:10px 0 0 10px; pointer-events:none;
+  }
+  .ledger-head{ padding-left:34px; margin-bottom:20px; border-bottom:1px dashed var(--line); padding-bottom:18px; }
+  .ledger-id{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); letter-spacing:0.03em; }
+  .ledger-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--walnut-dark); margin:2px 0 4px; }
+  .ledger-dates{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+
+  .content-inner{ padding-left:34px; }
+  .bio{ font-size:1rem; line-height:1.7; margin:0 0 22px; max-width:70ch; }
+
+  .facts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px 28px; margin-bottom:8px; }
+  @media (max-width:640px){ .facts-grid{ grid-template-columns:1fr; } }
+  .fact{ margin-bottom:6px; }
+  .fact label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.09em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;
+  }
+  .fact .val{ font-size:0.95rem; line-height:1.5; }
+  .fact ul{ margin:2px 0 0; padding-left:18px; }
+  .fact li{ margin-bottom:2px; }
+
+  .section-label{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1.15rem;
+    color:var(--walnut); margin:26px 0 12px; padding-left:34px;
+  }
+
+  .family-groups{ padding-left:34px; display:flex; flex-direction:column; gap:16px; margin-bottom:6px; }
+  .family-group-label{
+    font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:8px;
+  }
+  .family-pills{ display:flex; flex-wrap:wrap; gap:10px; }
+  .family-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#fff; border:1px solid var(--thread); border-radius:999px;
+    padding:5px 14px 5px 5px; font-size:0.88rem; color:var(--walnut-dark);
+  }
+  .family-pill .avatar{
+    width:26px; height:26px; border-radius:50%; object-fit:cover; border:1px solid var(--line); background:var(--paper-dim);
+  }
+  .family-pill .avatar.placeholder{
+    width:26px; height:26px; border-radius:50%; background:var(--paper-dim);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-soft);
+    font-family:'JetBrains Mono',monospace; font-size:0.6rem; border:1px solid var(--line);
+  }
+  .family-pill .tag{ font-size:0.7rem; color:var(--ink-soft); font-style:italic; }
+
+  .gallery{
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:10px;
+  }
+  .gallery figure{ margin:0; }
+  .gallery img{
+    width:100%; height:150px; object-fit:cover; border-radius:8px; border:1px solid var(--line);
+    box-shadow:var(--shadow); cursor:zoom-in; display:block; background:var(--paper-dim);
+    transition:transform .15s ease;
+  }
+  .gallery img:hover{ transform:translateY(-2px); }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(43,33,24,0.85); display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:40px; cursor:zoom-out;
+  }
+  .lightbox img{ max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,0.5); cursor:default; }
+  .lightbox-close{
+    position:fixed; top:20px; right:24px; width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(251,246,234,0.5); background:rgba(43,33,24,0.6); color:var(--paper);
+    font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close:hover{ background:rgba(43,33,24,0.9); }
+
+  .eras-grid{
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, 200px); gap:14px;
+  }
+  .era-tile{
+    display:block; border-radius:10px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); background:var(--card); color:inherit; transition:transform .12s ease;
+  }
+  .era-tile:hover{ transform:translateY(-2px); text-decoration:none; }
+  .era-tile .era-thumb{ width:100%; height:120px; object-fit:cover; display:block; background:var(--paper-dim); }
+  .era-tile .era-thumb.placeholder{ display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:0.7rem; }
+  .era-tile .era-label{ padding:10px 12px; }
+  .era-tile .era-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--walnut-dark); }
+  .era-tile .era-years{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--ink-soft); margin-top:2px; }
+
+  .category-row{ display:flex; flex-wrap:wrap; gap:28px; }
+  .category-col{ flex:0 0 auto; }
+
+  .stories-list{ padding-left:34px; display:flex; flex-direction:column; gap:16px; }
+  .story-card{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .story-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .story-title{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.15rem;
+    color:var(--walnut-dark); margin:0;
+  }
+  .story-meta{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); }
+  .story-desc{ font-size:0.95rem; line-height:1.65; margin:0 0 8px; white-space:pre-wrap; }
+  .story-desc.clamped{
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .story-people{ font-size:0.82rem; color:var(--ink-soft); font-style:italic; margin-top:6px; }
+
+  .placeholder-tabs{ display:flex; gap:6px; margin:26px 0 0 34px; }
+  .ph-tab{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:#B8A888; border:1px dashed var(--thread); border-radius:6px; padding:6px 10px;
+  }
+
+  .toast{
+    position:fixed; bottom:22px; right:22px; background:var(--walnut-dark); color:var(--paper);
+    padding:12px 18px; border-radius:8px; font-size:0.85rem; box-shadow:0 10px 30px -8px rgba(0,0,0,0.4);
+    max-width:340px; z-index:50;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div>
+      <div class="brand"><a href="../index.html">Forebears</a></div>
+      <div class="brand-sub">person page</div>
+    </div>
+  </div>
+
+  <main class="main" v-if="!personId">
+    <h1 class="hero-prompt">No person specified.</h1>
+    <p class="hero-sub">Open this page with a person id in the URL, e.g. person.html?id=craig-colin-cline.</p>
+  </main>
+
+  <main class="main" v-else-if="loadError">
+    <h1 class="hero-prompt">Couldn't load this page.</h1>
+    <p class="hero-sub">{{ loadError }} Make sure you're running this through the local server (see README — "Running it locally"), not opened directly from disk.</p>
+  </main>
+
+  <main class="main" v-else-if="!person">
+    <p class="empty-note">Loading people/{{ personId }}.json…</p>
+  </main>
+
+  <main class="main" v-else>
+    <div class="hero-photo" v-if="heroMedia">
+      <video v-if="heroIsVideo" :src="photoSrc(heroMedia)" autoplay muted loop playsinline></video>
+      <img v-else :src="photoSrc(heroMedia)" :alt="person.name">
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-head">
+        <div class="ledger-id">people/{{ person.id }}.json</div>
+        <div class="ledger-title">{{ person.name }} <span v-if="person.nickname">"{{ person.nickname }}"</span></div>
+        <div class="ledger-dates">{{ lifespan }}</div>
+      </div>
+
+      <div class="content-inner">
+        <p class="bio" v-if="person.biography">{{ person.biography }}</p>
+
+        <div class="facts-grid">
+          <div class="fact" v-if="person.occupation">
+            <label>Occupation</label>
+            <div class="val">{{ person.occupation }}</div>
+          </div>
+          <div class="fact" v-if="person.military">
+            <label>Military</label>
+            <div class="val">{{ person.military }}</div>
+          </div>
+          <div class="fact" v-if="person.education && person.education.length">
+            <label>Education</label>
+            <ul class="val"><li v-for="(e,i) in person.education" :key="i">{{ e }}</li></ul>
+          </div>
+          <div class="fact" v-if="person.placesLived && person.placesLived.length">
+            <label>Places lived</label>
+            <ul class="val"><li v-for="(p,i) in person.placesLived" :key="i">{{ p }}</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="parentsDisplay.length || spousesDisplay.length || childrenDisplay.length">
+      <div class="section-label">Family</div>
+      <div class="family-groups">
+        <div v-if="parentsDisplay.length">
+          <div class="family-group-label">Parents</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in parentsDisplay" :key="p.id" :href="personHref(p.id)">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+              <span v-if="p.tag" class="tag">({{ p.tag }})</span>
+            </a>
+          </div>
+        </div>
+        <div v-if="spousesDisplay.length">
+          <div class="family-group-label">Spouse(s)</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in spousesDisplay" :key="p.id" :href="personHref(p.id)">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+            </a>
+          </div>
+        </div>
+        <div v-if="childrenDisplay.length">
+          <div class="family-group-label">Children</div>
+          <div class="family-pills">
+            <a class="family-pill" v-for="p in childrenDisplay" :key="p.id" :href="personHref(p.id)">
+              <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
+              <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
+              {{ p.name }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="eraTiles.length">
+      <div class="section-label">Life Eras</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="e in eraTiles" :key="e.id" :href="'era.html?id=' + e.id">
+          <img v-if="e.thumbSrc" class="era-thumb" :src="e.thumbSrc" :alt="e.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ e.title }}</div>
+            <div class="era-years" v-if="e.years">{{ e.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    
+
+    <div v-if="sections.stories && sections.stories.length">
+      <div class="section-label">Stories</div>
+      <div class="stories-list">
+        <article class="story-card" v-for="s in sections.stories" :key="s.id">
+          <div class="story-card-head">
+            <h3 class="story-title">{{ s.title }}</h3>
+            <span class="story-meta" v-if="s.place">{{ s.place }}</span>
+          </div>
+          <p class="story-desc" :class="{clamped: !expandedStories[s.id] && isLong(s.description)}">{{ s.description }}</p>
+          <button class="btn small ghost" v-if="isLong(s.description)" @click="toggleStory(s.id)">
+            {{ expandedStories[s.id] ? 'Show less' : 'Read more' }}
+          </button>
+          <div class="story-people" v-if="storyPeopleNames(s).length">
+            With {{ storyPeopleNames(s).join(', ') }}
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="placeholder-tabs">
+      <span class="ph-tab">Timeline — Phase 3</span>
+      <span class="ph-tab">Generated site — Phase 4</span>
+    </div>
+    
+    <!-- Art + Automobiles share a row -->
+    <div class="category-row" v-if="(sections.art && sections.art.length) || (sections.cars && sections.cars.length)">
+      <div class="category-col" v-if="sections.art && sections.art.length">
+        <div class="section-label">Art</div>
+        <div class="eras-grid" :style="gridCols(sections.art.length)">
+          <a class="era-tile" v-for="r in sections.art" :key="r.id" :href="(r.id ? ('art.html?record=' + r.id) : '#')">
+            <img v-if="(r.images && r.images.length) || (r.photos && r.photos.length)" class="era-thumb" :src="photoSrc((r.images||r.photos)[0])" :alt="r.title">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">{{ r.title || r.id }}</div>
+              <div class="era-years" v-if="r.date">{{ r.date }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="category-col" v-if="sections.cars && sections.cars.length">
+        <div class="section-label">Automobiles</div>
+        <div class="eras-grid" :style="gridCols(1)">
+          <a class="era-tile" href="automobiles.html">
+            <img v-if="carsThumb" class="era-thumb" :src="photoSrc(carsThumb)" alt="Automobiles">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">Automobiles</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic category sections (architecture, inventions, books, etc.) -->
+    <template v-for="(items, key) in sections" :key="key">
+      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-else-if="items && items.length">
+        <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
+        <div class="eras-grid">
+          <a class="era-tile" v-for="r in items" :key="r.id" :href="(r.id ? (key + '.html?record=' + r.id) : '#')">
+            <img v-if="(r.images && r.images.length) || (r.photos && r.photos.length)" class="era-thumb" :src="photoSrc((r.images||r.photos)[0])" :alt="r.title">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">{{ r.title || r.id }}</div>
+              <div class="era-years" v-if="r.date">{{ r.date }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </template>
+  </main>
+
+  <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
+    <button class="lightbox-close" @click.stop="closeLightbox" aria-label="Close">×</button>
+    <img :src="lightboxUrl" @click.stop>
+  </div>
+
+  <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
+
+</div>
+
+<script>
+const { createApp, reactive, ref, computed, onMounted, onUnmounted } = Vue;
+
+createApp({
+  setup(){
+    // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__ into
+    // a baked copy of this file so it needs no ?id= param and no fetch().
+    // Absent in the live, server-fetched page — behavior there is unchanged.
+    const archiveData = window.__ARCHIVE_DATA__ || null;
+    const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
+    function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
+    const person = ref(null);
+    const peopleById = reactive({});
+    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
+    const expandedStories = reactive({});
+    const loadError = ref('');
+    const lightboxUrl = ref(null);
+
+    function closeLightbox(){ lightboxUrl.value = null; }
+    function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
+    onMounted(()=> window.addEventListener('keydown', onKeydown));
+    onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
+
+    function initials(name){ return (name||'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+    function photoSrc(filename){ return '../photos/' + filename; }
+    function gridCols(n){ return { gridTemplateColumns: 'repeat(' + Math.max(1, Math.min(n, 3)) + ', 200px)' }; }
+    const carsThumb = computed(()=>{
+      const withPhoto = (sections.cars || []).find(r => r.images && r.images.length);
+      return withPhoto ? withPhoto.images[0] : null;
+    });
+
+    const lifespan = computed(()=>{
+      if(!person.value) return '';
+      const b = person.value.birth || {};
+      const d = person.value.death || {};
+      const bStr = [b.date, b.place].filter(Boolean).join(', ');
+      const dStr = [d.date, d.place].filter(Boolean).join(', ');
+      if(!dStr) return 'b. ' + (bStr || '?');
+      return 'b. ' + (bStr || '?') + '  —  d. ' + dStr;
+    });
+
+    function resolvePerson(id, tag){
+      const p = peopleById[id];
+      return { id, name: p ? p.name : id, tag: tag || '', avatarSrc: (p && p.photos && p.photos.length) ? photoSrc(p.photos[0]) : null };
+    }
+
+    const heroMedia = computed(()=>{
+      if(!person.value) return null;
+      // prefer a media file attached via person.photos, otherwise first photo record image
+      if(person.value.photos && person.value.photos.length) return person.value.photos[0];
+      const photoRecords = sections.photos || [];
+      if(photoRecords.length && photoRecords[0].file) return photoRecords[0].file;
+      return null;
+    });
+    const heroIsVideo = computed(()=> heroMedia.value && heroMedia.value.toLowerCase().endsWith('.mp4'));
+
+    const parentsDisplay = computed(()=>{
+      if(!person.value) return [];
+      const list = (person.value.parents || []).map(id => resolvePerson(id));
+      (person.value.stepParents || []).forEach(id => list.push(resolvePerson(id, 'step-parent')));
+      return list;
+    });
+    const spousesDisplay = computed(()=> person.value ? (person.value.spouses||[]).map(id => resolvePerson(id)) : []);
+    const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
+
+    const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
+
+    function isLong(text){ return (text||'').length > 260; }
+    function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
+    function storyPeopleNames(story){ return (story.people||[]).filter(id => id !== personId).map(id => (peopleById[id] ? peopleById[id].name : id)); }
+
+    async function loadAll(){
+      if(archiveData){
+        person.value = archiveData.person;
+        Object.assign(sections, archiveData.sections);
+        Object.assign(peopleById, archiveData.peopleById || {});
+        return;
+      }
+      if(!personId) return;
+      try{
+        const result = await loadPersonRecord(personId);
+        person.value = result.person;
+        Object.assign(sections, result.sections);
+      }catch(e){ loadError.value = 'Could not load people/' + personId + '.json.'; return; }
+
+      // Fetch related people for family and story participants
+      const relatedIds = new Set([...(person.value.parents||[]), ...(person.value.stepParents||[]), ...(person.value.spouses||[]), ...(person.value.children||[])]);
+      for(const s of (sections.stories||[])){
+        (s.people||[]).forEach(id=>relatedIds.add(id));
+      }
+      await Promise.all([...relatedIds].map(async id => {
+        try{ peopleById[id] = await (await fetch('../people/' + id + '.json', {cache:'no-store'})).json(); }
+        catch(e){ console.warn('Could not load related person', id); }
+      }));
+    }
+
+    loadAll();
+
+    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox, gridCols, carsThumb, personHref };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
