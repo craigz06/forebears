@@ -1,3 +1,31 @@
 {
-  "files": []
+  "files": [
+    "1946-cadillac-limo.json",
+    "1948-cj2a-jeep.json",
+    "1949-jeepster.json",
+    "1955-chevrolet-belair.json",
+    "1955-chevrolet.json",
+    "1956-lincoln-mkii.json",
+    "1957-chevrolet-gold.json",
+    "1957-pearl-white.json",
+    "1957-yellow-bird.json",
+    "1963-correct-craft-boat.json",
+    "1963-ford-falcon.json",
+    "1965-lincoln.json",
+    "1966-camero.json",
+    "1966-corvair-midengine.json",
+    "1967-cadillac-eldorado.json",
+    "1967-mercedes-250c.json",
+    "1968-mgb.json",
+    "1969-kawasaki-h1.json",
+    "1969-rolls-silver.json",
+    "1972-camero.json",
+    "1972-kawasaki-750.json",
+    "1981-chevrolet.json",
+    "1989-chrysler-tc-by.json",
+    "1999-740il-bm.json",
+    "2001-corvette-z06.json",
+    "2005-350z.json",
+    "2012-mini-cooper.json"
+  ]
 }

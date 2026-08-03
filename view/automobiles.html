@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forebears — Automobiles Modified and Restored</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<style>
+  :root{
+    --paper:#F2E8D5; --paper-dim:#EADFC6; --card:#FBF6EA; --ink:#2B2118; --ink-soft:#5A4C3C;
+    --walnut-dark:#3E2B20; --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Lora', Georgia, serif; margin:0; padding:44px 48px 80px; color:var(--ink); background:var(--paper);}
+  .main{max-width:960px;margin:0 auto}
+  .back{display:inline-block;margin-bottom:20px; color:var(--ink-soft); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.8rem;}
+  .back:hover{ text-decoration:underline; }
+  h1{font-family:'Fraunces',serif; font-style:italic; color:var(--walnut-dark); margin:0 0 30px;}
+
+  .cars-grid{ display:grid; grid-template-columns:repeat(3, 200px); gap:14px; justify-content:start; }
+  .car-tile{
+    display:block; border-radius:10px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); background:var(--card); color:inherit; text-decoration:none; transition:transform .12s ease;
+  }
+  .car-tile:hover{ transform:translateY(-2px); }
+  .car-thumb{ width:100%; height:120px; object-fit:cover; display:block; background:var(--paper-dim); }
+  .car-thumb.placeholder{ display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:0.7rem; }
+  .car-label{ padding:10px 12px; }
+  .car-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.0rem; color:var(--walnut-dark); line-height:1.3; }
+  .car-years{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--ink-soft); margin-top:2px; }
+</style>
+</head>
+<body>
+<div id="app" class="main">
+  <a class="back" href="person.html?id=craig-colin-cline">← Craig Colin Cline</a>
+  <h1>Automobiles Modified and Restored</h1>
+  <div class="cars-grid">
+    <a class="car-tile" v-for="r in records" :key="r.id" :href="'cars.html?record=' + r.id">
+      <img v-if="r.images && r.images.length" class="car-thumb" :src="photoSrc(r.images[0])" :alt="r.title">
+      <div v-else class="car-thumb placeholder">no photo</div>
+      <div class="car-label">
+        <div class="car-title">{{ r.title }}</div>
+        <div class="car-years" v-if="r.date">{{ r.date }}</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue;
+createApp({
+  setup(){
+    const records = ref([]);
+    function photoSrc(filename){ return '../photos/' + filename; }
+
+    onMounted(async ()=>{
+      try{
+        const idxRes = await fetch('../cars/index.json', {cache:'no-store'});
+        const idx = await idxRes.json();
+        const loaded = [];
+        for(const filename of idx.files){
+          if(!filename || !filename.endsWith('.json')) continue;
+          try{
+            const res = await fetch('../cars/' + filename, {cache:'no-store'});
+            if(!res.ok) continue;
+            loaded.push(await res.json());
+          }catch(e){ console.warn('Could not load', filename); }
+        }
+        records.value = loaded;
+      }catch(e){ console.warn(e); }
+    });
+
+    return { records, photoSrc };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

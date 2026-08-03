@@ -148,7 +148,7 @@
   .lightbox-close:hover{ background:rgba(43,33,24,0.9); }
 
   .eras-grid{
-    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px;
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, 200px); gap:14px;
   }
   .era-tile{
     display:block; border-radius:10px; overflow:hidden; border:1px solid var(--line);
@@ -160,6 +160,9 @@
   .era-tile .era-label{ padding:10px 12px; }
   .era-tile .era-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.05rem; color:var(--walnut-dark); }
   .era-tile .era-years{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--ink-soft); margin-top:2px; }
+
+  .category-row{ display:flex; flex-wrap:wrap; gap:28px; }
+  .category-col{ flex:0 0 auto; }
 
   .stories-list{ padding-left:34px; display:flex; flex-direction:column; gap:16px; }
   .story-card{
@@ -329,9 +332,38 @@
       <span class="ph-tab">Generated site — Phase 4</span>
     </div>
     
-    <!-- Generic category sections (cars, art, architecture, inventions, books, etc.) -->
+    <!-- Art + Automobiles share a row -->
+    <div class="category-row" v-if="(sections.art && sections.art.length) || (sections.cars && sections.cars.length)">
+      <div class="category-col" v-if="sections.art && sections.art.length">
+        <div class="section-label">Art</div>
+        <div class="eras-grid" :style="gridCols(sections.art.length)">
+          <a class="era-tile" v-for="r in sections.art" :key="r.id" :href="(r.id ? ('art.html?record=' + r.id) : '#')">
+            <img v-if="(r.images && r.images.length) || (r.photos && r.photos.length)" class="era-thumb" :src="photoSrc((r.images||r.photos)[0])" :alt="r.title">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">{{ r.title || r.id }}</div>
+              <div class="era-years" v-if="r.date">{{ r.date }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="category-col" v-if="sections.cars && sections.cars.length">
+        <div class="section-label">Automobiles</div>
+        <div class="eras-grid" :style="gridCols(1)">
+          <a class="era-tile" href="automobiles.html">
+            <img v-if="carsThumb" class="era-thumb" :src="photoSrc(carsThumb)" alt="Automobiles">
+            <div v-else class="era-thumb placeholder">no photo</div>
+            <div class="era-label">
+              <div class="era-title">Automobiles</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','stories','photos'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -377,6 +409,11 @@ createApp({
 
     function initials(name){ return (name||'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
     function photoSrc(filename){ return '../photos/' + filename; }
+    function gridCols(n){ return { gridTemplateColumns: 'repeat(' + Math.max(1, Math.min(n, 3)) + ', 200px)' }; }
+    const carsThumb = computed(()=>{
+      const withPhoto = (sections.cars || []).find(r => r.images && r.images.length);
+      return withPhoto ? withPhoto.images[0] : null;
+    });
 
     const lifespan = computed(()=>{
       if(!person.value) return '';
@@ -439,7 +476,7 @@ createApp({
 
     loadAll();
 
-    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox };
+    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox, gridCols, carsThumb };
   }
 }).mount('#app');
 </script>

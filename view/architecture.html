@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Forebears — Art</title>
+<title>Forebears — Architecture</title>
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
 <style>
@@ -63,7 +63,7 @@ createApp({
       const rec = params.get('record');
       if(!rec) return;
       try{
-        const res = await fetch('../art/' + rec + '.json', {cache:'no-store'});
+        const res = await fetch('../architecture/' + rec + '.json', {cache:'no-store'});
         if(!res.ok) throw new Error('Not found');
         recordData.value = await res.json();
       }catch(e){ console.warn(e); }
