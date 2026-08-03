@@ -261,7 +261,7 @@
         <div v-if="parentsDisplay.length">
           <div class="family-group-label">Parents</div>
           <div class="family-pills">
-            <a class="family-pill" v-for="p in parentsDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+            <a class="family-pill" v-for="p in parentsDisplay" :key="p.id" :href="personHref(p.id)">
               <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
               <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
               {{ p.name }}
@@ -272,7 +272,7 @@
         <div v-if="spousesDisplay.length">
           <div class="family-group-label">Spouse(s)</div>
           <div class="family-pills">
-            <a class="family-pill" v-for="p in spousesDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+            <a class="family-pill" v-for="p in spousesDisplay" :key="p.id" :href="personHref(p.id)">
               <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
               <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
               {{ p.name }}
@@ -282,7 +282,7 @@
         <div v-if="childrenDisplay.length">
           <div class="family-group-label">Children</div>
           <div class="family-pills">
-            <a class="family-pill" v-for="p in childrenDisplay" :key="p.id" :href="'person.html?id=' + p.id">
+            <a class="family-pill" v-for="p in childrenDisplay" :key="p.id" :href="personHref(p.id)">
               <img v-if="p.avatarSrc" class="avatar" :src="p.avatarSrc" :alt="p.name">
               <span v-else class="avatar placeholder">{{ initials(p.name) }}</span>
               {{ p.name }}
@@ -394,7 +394,12 @@ const { createApp, reactive, ref, computed, onMounted, onUnmounted } = Vue;
 
 createApp({
   setup(){
-    const personId = new URLSearchParams(window.location.search).get('id');
+    // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__ into
+    // a baked copy of this file so it needs no ?id= param and no fetch().
+    // Absent in the live, server-fetched page — behavior there is unchanged.
+    const archiveData = window.__ARCHIVE_DATA__ || null;
+    const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
+    function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     const person = ref(null);
     const peopleById = reactive({});
     const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
@@ -456,6 +461,12 @@ createApp({
     function storyPeopleNames(story){ return (story.people||[]).filter(id => id !== personId).map(id => (peopleById[id] ? peopleById[id].name : id)); }
 
     async function loadAll(){
+      if(archiveData){
+        person.value = archiveData.person;
+        Object.assign(sections, archiveData.sections);
+        Object.assign(peopleById, archiveData.peopleById || {});
+        return;
+      }
       if(!personId) return;
       try{
         const result = await loadPersonRecord(personId);
@@ -476,7 +487,7 @@ createApp({
 
     loadAll();
 
-    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox, gridCols, carsThumb };
+    return { personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay, eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl, initials, closeLightbox, gridCols, carsThumb, personHref };
   }
 }).mount('#app');
 </script>

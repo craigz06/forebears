@@ -40,14 +40,13 @@ render) if they're missing or a person/era has no photos yet.
 
 ## Running it locally (recommended)
 
-Opening these files straight from disk (`file://...`) works, but each page
-is sandboxed independently, so the browser makes you re-click **Connect
-folder** on every single navigation — editor to viewer, person page to era
-page, all of it. Serving over plain HTTP instead fixes this: every page
-shares one origin (`http://localhost:8000`), so the browser remembers the
-folder grant across pages instead of asking every time.
-
-From the repo root:
+The `view/*.html` pages (`person.html`, `era.html`, `art.html`,
+`architecture.html`, `cars.html`, `automobiles.html`) load their data with
+`fetch()` against relative JSON paths. Browsers block `fetch()` against
+`file://` outright — it's not a permission prompt you can click through,
+it's a hard scheme restriction — so opening one of these by double-clicking
+it will always fail with a "Could not load..." error. They need an HTTP
+origin, any port:
 
 ```
 python3 -m http.server 8000
@@ -56,11 +55,18 @@ python3 -m http.server 8000
 (macOS ships Python 3, so this needs nothing extra. If you'd rather use
 Node, `npx serve .` from the repo root works the same way.)
 
-Then open `http://localhost:8000/editor/person-editor.html` or
-`http://localhost:8000/view/person.html?id=craig-colin-cline`, etc. When
-you click **Connect folder**, pick this same repo folder — it's already
-where `people/`, `photos/`, `videos/`, and `eras/` live. Stop the server
-with Ctrl+C when you're done.
+Then open `http://localhost:8000/view/person.html?id=craig-colin-cline`,
+etc. Stop the server with Ctrl+C when you're done.
+
+The editor (`editor/person-editor.html`) is different — it uses the File
+System Access API (**Connect folder**) to read and write JSON directly, and
+that part of the flow does work over `file://`, just open it and click
+Connect folder as usual. See "If you're not on Chrome/Edge" below if
+that API isn't available to you.
+
+**No server at all?** See "Static archive (zero-server)" below —
+`generate-archive.js` bakes the viewer's data into standalone HTML files
+that work straight off an SD card via `file://`, no `fetch()` involved.
 
 ## How to use it
 
@@ -99,11 +105,54 @@ page (the File System Access API). The app detects this and switches to:
 
 Everything else works the same; you just move files by hand.
 
+## Static archive (zero-server)
+
+`generate-archive.js` is a separate, additive script — it doesn't change
+how the live editor or `view/*.html` pages behave; it just reads the same
+JSON `view/person-data.js` fetches at runtime and bakes it into standalone
+files. Run from the repo root (needs Node, no npm packages required):
+
+```
+node generate-archive.js
+```
+
+For every file in `people/`, this walks the same 8 content folders
+(`eras`, `stories`, `photos`, `cars`, `art`, `architecture`, `inventions`,
+`books`) and related-people lookups that `person-data.js` does, then writes
+a copy of `view/person.html` with that data inlined as
+`window.__ARCHIVE_DATA__` instead of left to `fetch()`. It's the same
+template and the same Vue app — just fed data synchronously instead of
+over the network, so the rendered page is identical to the live viewer.
+
+Output lands in `archive/`:
+
+```
+archive/
+  index.html          <- plain link list of everyone generated
+  view/<slug>.html     <- one self-contained page per person, e.g. craig-colin-cline.html
+  photos/              <- only the photos/videos those pages actually reference
+  assets/              <- vendored Vue + fonts, copied wholesale
+```
+
+Open `archive/index.html` (or any `archive/view/<slug>.html`) straight from
+disk — no server, works from an SD card. Family links between generated
+pages resolve to the sibling `.html` file directly (no `?id=` query string
+needed). Re-run the command any time the source JSON changes; it fully
+regenerates `archive/` from scratch.
+
+**Known limitation:** only person pages are generated so far. A person
+page's links to era/art/architecture/cars/automobiles detail pages
+(`era.html?id=...`, `art.html?record=...`, etc.) still point at the live,
+fetch-based versions of those templates, which won't resolve inside the
+static archive. Extending the same bake-instead-of-fetch approach to those
+templates would be the natural next phase.
+
 ## What this is / isn't
 
-No timeline or generated static site yet — that's Phase 3/4, and it'll
-build on the same JSON files everything else here creates. The JSON is
-the database; the editor and view templates are just windows onto it.
+No timeline yet — that's Phase 3, and it'll build on the same JSON files
+everything else here creates. The JSON is the database; the editor and
+view templates are just windows onto it. A first pass at Phase 4 (a
+generated static site) now exists — see "Static archive" above.
 
 Nothing is stored in the browser between sessions (no localStorage) —
 the JSON files on disk are the only persistent state, on purpose. That
