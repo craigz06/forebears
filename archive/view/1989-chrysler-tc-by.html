@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forebears — Automobiles</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<script>window.__ARCHIVE_DATA__ = {"id":"1989-chrysler-tc-by","person_id":"craig-colin-cline","title":"1989 Chrysler TC by...","date":"1989","description":"","images":["a-89tc-1.png","a-89tc-2.png","a-89tc-3.png","a-89tc-4.png"],"tags":["automobiles"],"photoNotes":{"a-89tc-1.png":[{"text":"Mom and Bill gave me this American Maserati. I was a nice car but it had an electrical short. The dealership could not isolate the slow drain and neither could I at the time. Now I realize an ampmeter might see which circuit was faulty","date_added":"2026-08-04"}],"a-89tc-2.png":[{"text":"So I sold it cheap to an employee and told her the problem, The battery obviously went dead and she got mad even knowing it needed a repair. Honesty is sometimes not good enough.","date_added":"2026-08-04"}],"a-89tc-3.png":[],"a-89tc-4.png":[]}};</script>
+<style>
+  body{font-family:'Lora', Georgia, serif; margin:28px; color:#2B2118}
+  .main{max-width:1000px;margin:0 auto}
+  .hero{margin-bottom:18px}
+  .hero h1{font-family:'Fraunces',serif}
+  .desc{margin-bottom:14px; color:#5A4C3C}
+  .gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px}
+  .gallery img{width:100%; height:160px; object-fit:cover; border-radius:8px; cursor:zoom-in}
+  .lightbox{position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:zoom-out}
+  .lightbox img{max-width:96%; max-height:96%; cursor:default}
+  .lightbox-close{
+    position:fixed; top:20px; right:24px; width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.5); background:rgba(0,0,0,0.6); color:#fff;
+    font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close:hover{ background:rgba(0,0,0,0.9); }
+  .back{display:inline-block;margin-bottom:14px}
+
+  .connect-bar{ margin-bottom:14px; font-size:0.82rem; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .btn-connect{ font-size:0.78rem; padding:5px 12px; border-radius:6px; border:1px solid #9C7A2E; background:#fff; color:#9C7A2E; cursor:pointer; }
+  .btn-connect:hover{ background:#FBF6EA; }
+  .connected{ color:#5A4C3C; }
+  .connect-error{ color:#9C4A35; }
+
+  .gallery figure{ margin:0; display:flex; flex-direction:column; gap:6px; background:#fff; border-radius:8px; padding:6px; border:1px solid #e5dcc3; }
+  .note-toggle{ font-size:0.7rem; background:none; border:none; color:#9C7A2E; cursor:pointer; padding:2px 0; text-align:left; font-family:inherit; }
+  .note-toggle:hover{ text-decoration:underline; }
+  .notes-list{ display:flex; flex-direction:column; gap:4px; }
+  .note-item{ background:#F7F1E1; border-radius:6px; padding:5px 8px; font-size:0.78rem; }
+  .note-text{ color:#2B2118; line-height:1.4; white-space:pre-wrap; }
+  .note-date{ font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:#8a7a5c; margin-top:2px; }
+  .note-box{ display:flex; flex-direction:column; gap:6px; background:#F7F1E1; border-radius:6px; padding:8px; }
+  .note-box textarea{ width:100%; font-family:inherit; font-size:0.8rem; border:1px solid #d8c9a3; border-radius:6px; padding:6px; resize:vertical; box-sizing:border-box; }
+  .note-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .btn-save{ font-size:0.78rem; padding:4px 10px; border-radius:6px; border:1px solid #9C7A2E; background:#9C7A2E; color:#fff; cursor:pointer; }
+  .btn-save:disabled{ opacity:0.5; cursor:default; }
+  .note-hint{ font-size:0.72rem; color:#8a7a5c; }
+  .note-error{ font-size:0.72rem; color:#9C4A35; }
+
+  .toast{
+    position:fixed; bottom:22px; right:22px; background:#3E2B20; color:#FBF6EA;
+    padding:10px 16px; border-radius:8px; font-size:0.82rem; box-shadow:0 10px 30px -8px rgba(0,0,0,0.4); z-index:200;
+  }
+</style>
+</head>
+<body>
+<div id="app" class="main">
+  <a class="back" href="../index.html">← Forebears</a>
+  <div class="hero" v-if="recordData">
+    <h1>{{ recordData.title }}</h1>
+    <div class="desc" v-if="recordData.description">{{ recordData.description }}</div>
+  </div>
+  <div v-if="!recordData">Loading…</div>
+
+  <div class="connect-bar" v-if="recordData">
+    <span v-if="photosDirHandle" class="connected">✓ Connected to {{ dirHandle.name }} — notes save to disk</span>
+    <button v-else class="btn-connect" @click="connectFolder">Connect to Forebears folder to add notes</button>
+    <span class="connect-error" v-if="connectError">{{ connectError }}</span>
+  </div>
+
+  <div class="gallery" v-if="recordData && recordData.images && recordData.images.length">
+    <figure v-for="(img,i) in recordData.images" :key="i">
+      <img :src="photoSrc(img)" @click="openLightbox(photoSrc(img))" :alt="recordData.title + ' ' + (i+1)">
+
+      <div class="notes-list" v-if="photoNotes[img] && photoNotes[img].length">
+        <div class="note-item" v-for="(n,ni) in photoNotes[img]" :key="ni">
+          <div class="note-text">{{ n.text }}</div>
+          <div class="note-date">{{ n.date_added }}</div>
+        </div>
+      </div>
+
+      <button class="note-toggle" @click="toggleNoteBox(img)">
+        {{ openNoteFor === img ? 'Cancel' : ((photoNotes[img] && photoNotes[img].length) ? '+ Add another note' : '+ Add note') }}
+      </button>
+
+      <div class="note-box" v-if="openNoteFor === img">
+        <textarea v-model="noteDraft" placeholder="Add a note about this photo…" rows="2"></textarea>
+        <div class="note-actions">
+          <button class="btn-save" @click="saveNote(img)" :disabled="saving || !noteDraft.trim()">{{ saving ? 'Saving…' : 'Save note' }}</button>
+          <span class="note-hint" v-if="!photosDirHandle">Connect the folder above to save.</span>
+        </div>
+        <div class="note-error" v-if="saveError">{{ saveError }}</div>
+      </div>
+    </figure>
+  </div>
+
+  <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
+    <button class="lightbox-close" @click.stop="closeLightbox" aria-label="Close">×</button>
+    <img :src="lightboxUrl" @click.stop>
+  </div>
+
+  <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
+</div>
+
+<script>
+const { createApp, ref, reactive, onMounted, onUnmounted } = Vue;
+createApp({
+  setup(){
+    const recordData = ref(null);
+    const lightboxUrl = ref('');
+    function photoSrc(filename){ return '../photos/' + filename; }
+    function openLightbox(url){ lightboxUrl.value = url; }
+    function closeLightbox(){ lightboxUrl.value = ''; }
+    function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
+    onMounted(()=> window.addEventListener('keydown', onKeydown));
+    onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
+
+    // --- photo notes: read via fetch() for everyone, write via File
+    // System Access API (same connect-folder/write pattern as
+    // editor/person-editor.html) once a visitor connects the folder. ---
+    const photoNotes = reactive({});      // filename -> [{text, date_added}, ...]
+    const dirHandle = ref(null);
+    const photosDirHandle = ref(null);
+    const connectError = ref('');
+    const openNoteFor = ref(null);
+    const noteDraft = ref('');
+    const saving = ref(false);
+    const saveError = ref('');
+    const toastMsg = ref('');
+
+    function photoBase(filename){ return filename.replace(/\.[^.]+$/, ''); }
+
+    function flashToast(msg){
+      toastMsg.value = msg;
+      setTimeout(()=>{ if(toastMsg.value === msg) toastMsg.value = ''; }, 2500);
+    }
+
+    async function loadPhotoNotes(images){
+      await Promise.all(images.map(async filename => {
+        try{
+          const res = await fetch('../photos/' + photoBase(filename) + '.json', { cache: 'no-store' });
+          photoNotes[filename] = res.ok ? ((await res.json()).notes || []) : [];
+        }catch(e){ photoNotes[filename] = []; }
+      }));
+    }
+
+    async function connectFolder(){
+      try{
+        const handle = await window.showDirectoryPicker();
+        dirHandle.value = handle;
+        photosDirHandle.value = await handle.getDirectoryHandle('photos', {create:true});
+        connectError.value = '';
+        flashToast('Connected to ' + handle.name + '.');
+      }catch(e){
+        if(e.name !== 'AbortError'){ console.error(e); connectError.value = 'Could not connect: ' + e.message; }
+      }
+    }
+
+    async function writeJsonToDir(dh, filename, json){
+      const fh = await dh.getFileHandle(filename, {create:true});
+      const w = await fh.createWritable();
+      await w.write(json);
+      await w.close();
+      try{ await regenerateIndex(dh); }catch(e){ console.warn('Could not regenerate photos/index.json', e); }
+    }
+
+    async function regenerateIndex(dh){
+      const files = [];
+      for await (const [name, handle] of dh.entries()){
+        if(handle.kind === 'file' && name !== 'index.json') files.push(name);
+      }
+      files.sort();
+      const fh = await dh.getFileHandle('index.json', {create:true});
+      const w = await fh.createWritable();
+      await w.write(JSON.stringify({ files }, null, 2));
+      await w.close();
+    }
+
+    function toggleNoteBox(filename){
+      openNoteFor.value = (openNoteFor.value === filename) ? null : filename;
+      noteDraft.value = '';
+      saveError.value = '';
+    }
+
+    async function saveNote(filename){
+      const text = noteDraft.value.trim();
+      if(!text) return;
+      if(!photosDirHandle.value){ saveError.value = 'Connect the Forebears folder above first.'; return; }
+
+      saving.value = true;
+      saveError.value = '';
+      const base = photoBase(filename);
+      try{
+        // Read whatever's already on disk for this photo (if anything) so
+        // an existing description or other fields survive, per the same
+        // never-clobber-existing-data rule the editor follows.
+        let existing = null;
+        try{
+          const fh = await photosDirHandle.value.getFileHandle(base + '.json', {create:false});
+          existing = JSON.parse(await (await fh.getFile()).text());
+        }catch(e){
+          if(e.name !== 'NotFoundError') throw e;
+        }
+
+        const record = existing || { id: base, file: filename };
+        if(!Array.isArray(record.notes)) record.notes = [];
+        record.notes.push({ text, date_added: new Date().toISOString().slice(0, 10) });
+
+        await writeJsonToDir(photosDirHandle.value, base + '.json', JSON.stringify(record, null, 2));
+
+        photoNotes[filename] = record.notes;
+        noteDraft.value = '';
+        openNoteFor.value = null;
+        flashToast('Note saved.');
+      }catch(e){
+        console.error(e);
+        saveError.value = 'Could not save note: ' + e.message;
+      }finally{
+        saving.value = false;
+      }
+    }
+
+    onMounted(async ()=>{
+      // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+      // into a baked copy of this file, no fetch() needed — including the
+      // notes, which are baked in as recordData.photoNotes (see
+      // generate-archive.js's loadPhotoNotesFor) so they show up under
+      // file:// too. Absent in the live, server-fetched page — behavior
+      // there is unchanged.
+      if(window.__ARCHIVE_DATA__){
+        recordData.value = window.__ARCHIVE_DATA__;
+        if(recordData.value.photoNotes){
+          Object.assign(photoNotes, recordData.value.photoNotes);
+        } else if(recordData.value.images && recordData.value.images.length){
+          loadPhotoNotes(recordData.value.images);
+        }
+        return;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const rec = params.get('record');
+      if(!rec) return;
+      try{
+        const res = await fetch('../cars/' + rec + '.json', {cache:'no-store'});
+        if(!res.ok) throw new Error('Not found');
+        recordData.value = await res.json();
+        if(recordData.value.images && recordData.value.images.length){
+          loadPhotoNotes(recordData.value.images);
+        }
+      }catch(e){ console.warn(e); }
+    });
+
+    return {
+      recordData, lightboxUrl, photoSrc, openLightbox, closeLightbox,
+      photoNotes, dirHandle, photosDirHandle, connectError, connectFolder,
+      openNoteFor, noteDraft, saving, saveError, toggleNoteBox, saveNote, toastMsg
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

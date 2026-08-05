@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forebears — Art</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<script>window.__ARCHIVE_DATA__ = {"id":"cartoons","person_id":"craig-colin-cline","title":"Cartoons","date":"","description":"","images":["car-27.png","car-1.png","car-2.png","car-3.png","car-5.png","car-6.png","car-7.png","car-8.png","car-9.png","car-10.png","car-11.png","car-12.png","car-13.png","car-14.png","car-15.png","car-16.png","car-17.png","car-18.png","car-19.png","car-20.png","car-21.png","car-22.png","car-25.png","car-26.png","car-28.png","car-29.png","car-30.png","car-31.png","car-32.png","car-33.png"],"tags":["art","cartoon"],"photoNotes":{"car-27.png":[],"car-1.png":[],"car-2.png":[],"car-3.png":[],"car-5.png":[],"car-6.png":[],"car-7.png":[],"car-8.png":[],"car-9.png":[],"car-10.png":[],"car-11.png":[],"car-12.png":[],"car-13.png":[],"car-14.png":[],"car-15.png":[],"car-16.png":[],"car-17.png":[],"car-18.png":[],"car-19.png":[],"car-20.png":[],"car-21.png":[],"car-22.png":[],"car-25.png":[],"car-26.png":[],"car-28.png":[],"car-29.png":[],"car-30.png":[],"car-31.png":[],"car-32.png":[],"car-33.png":[]}};</script>
+<style>
+  body{font-family:'Lora', Georgia, serif; margin:28px; color:#2B2118}
+  .main{max-width:1000px;margin:0 auto}
+  .hero{margin-bottom:18px}
+  .hero h1{font-family:'Fraunces',serif}
+  .desc{margin-bottom:14px; color:#5A4C3C}
+  .gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px}
+  .gallery img{width:100%; height:160px; object-fit:cover; border-radius:8px; cursor:zoom-in}
+  .lightbox{position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:zoom-out}
+  .lightbox img{max-width:96%; max-height:96%; cursor:default}
+  .lightbox-close{
+    position:fixed; top:20px; right:24px; width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.5); background:rgba(0,0,0,0.6); color:#fff;
+    font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close:hover{ background:rgba(0,0,0,0.9); }
+  .back{display:inline-block;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div id="app" class="main">
+  <a class="back" href="../index.html">← Forebears</a>
+  <div class="hero" v-if="recordData">
+    <h1>{{ recordData.title }}</h1>
+    <div class="desc" v-if="recordData.description">{{ recordData.description }}</div>
+  </div>
+  <div v-if="!recordData">Loading…</div>
+  <div class="gallery" v-if="recordData && recordData.images && recordData.images.length">
+    <figure v-for="(img,i) in recordData.images" :key="i">
+      <img :src="photoSrc(img)" @click="openLightbox(photoSrc(img))" :alt="recordData.title + ' ' + (i+1)">
+    </figure>
+  </div>
+
+  <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
+    <button class="lightbox-close" @click.stop="closeLightbox" aria-label="Close">×</button>
+    <img :src="lightboxUrl" @click.stop>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, onMounted, onUnmounted } = Vue;
+createApp({
+  setup(){
+    const recordData = ref(null);
+    const lightboxUrl = ref('');
+    function photoSrc(filename){ return '../photos/' + filename; }
+    function openLightbox(url){ lightboxUrl.value = url; }
+    function closeLightbox(){ lightboxUrl.value = ''; }
+    function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
+    onMounted(()=> window.addEventListener('keydown', onKeydown));
+    onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
+
+    onMounted(async ()=>{
+      // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+      // into a baked copy of this file, no fetch() needed. Absent on the
+      // live, server-fetched page — behavior there is unchanged.
+      if(window.__ARCHIVE_DATA__){
+        recordData.value = window.__ARCHIVE_DATA__;
+        return;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const rec = params.get('record');
+      if(!rec) return;
+      try{
+        const res = await fetch('../art/' + rec + '.json', {cache:'no-store'});
+        if(!res.ok) throw new Error('Not found');
+        recordData.value = await res.json();
+      }catch(e){ console.warn(e); }
+    });
+
+    return { recordData, lightboxUrl, photoSrc, openLightbox, closeLightbox };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
