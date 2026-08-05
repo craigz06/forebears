@@ -82,7 +82,10 @@ async function abLoadPeopleById(peopleHandle, ids) {
   return map;
 }
 
-// Mirrors generate-archive.js's collectReferencedMedia().
+// Mirrors generate-archive.js's collectReferencedMedia(). The Creations
+// section (Craig-only) renders every image in architecture/art/cars/
+// books/inventions, not just a thumbnail per record — so all of them need
+// to be copied, not just the first per record.
 function abCollectReferencedMedia(person, sections, peopleById) {
   const files = new Set();
 
@@ -97,17 +100,56 @@ function abCollectReferencedMedia(person, sections, peopleById) {
     if (e.photos && e.photos.length) files.add(e.photos[0]);
   });
 
-  ['art', 'architecture', 'inventions', 'books'].forEach(key => {
+  ['architecture', 'art', 'cars', 'books', 'inventions'].forEach(key => {
     (sections[key] || []).forEach(r => {
-      const img = (r.images && r.images.length) ? r.images[0] : (r.photos && r.photos.length ? r.photos[0] : null);
-      if (img) files.add(img);
+      const imgs = r.images || r.photos || [];
+      imgs.forEach(img => files.add(img));
     });
   });
 
-  const carWithPhoto = (sections.cars || []).find(r => r.images && r.images.length);
-  if (carWithPhoto) files.add(carWithPhoto.images[0]);
-
   return [...files];
+}
+
+// Generic version of abBuildPersonHTML for the record-detail templates
+// (art.html, architecture.html, cars.html, era.html, automobiles.html),
+// which don't load person-data.js but all load Vue the same way.
+function abBakeRecordHTML(templateSrc, data) {
+  const dataScript = `<script>window.__ARCHIVE_DATA__ = ${abSafeJSONForScript(data)};</script>`;
+  return templateSrc.replace(
+    '<script src="../assets/vendor/vue.global.prod.js"></script>',
+    '<script src="../assets/vendor/vue.global.prod.js"></script>\n' + dataScript
+  );
+}
+
+// Reads every record (skipping index.json itself) out of a top-level
+// content folder handle, e.g. abLoadFolderRecords(rootHandle, 'cars').
+async function abLoadFolderRecords(rootHandle, folder) {
+  let folderHandle;
+  try { folderHandle = await rootHandle.getDirectoryHandle(folder); }
+  catch (e) { return []; }
+  const idx = await abTryReadJSON(folderHandle, 'index.json');
+  if (!idx || !Array.isArray(idx.files)) return [];
+  const records = [];
+  for (const filename of idx.files) {
+    if (!filename || !filename.endsWith('.json')) continue;
+    const record = await abTryReadJSON(folderHandle, filename);
+    if (record) records.push(record);
+  }
+  return records;
+}
+
+// Reads photos/<basename>.json (the Photo object type view/cars.html's
+// "+ Add note" writes to) for each filename and returns a map of
+// filename -> notes[]. Missing/note-less files just contribute an empty
+// array, same as the live pages' fetch-based fallback.
+async function abLoadPhotoNotesFor(photosHandle, filenames) {
+  const map = {};
+  for (const filename of filenames) {
+    const base = filename.replace(/\.[^.]+$/, '');
+    const record = await abTryReadJSON(photosHandle, base + '.json');
+    map[filename] = (record && Array.isArray(record.notes)) ? record.notes : [];
+  }
+  return map;
 }
 
 async function abPersonSlugs(peopleHandle) {
@@ -200,6 +242,7 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
   const templateFh = await viewHandle.getFileHandle('person.html');
   const templateSrc = await (await templateFh.getFile()).text();
   const peopleHandle = await rootHandle.getDirectoryHandle('people');
+  const photosHandle = await rootHandle.getDirectoryHandle('photos', { create: true });
 
   const slugs = await abPersonSlugs(peopleHandle);
   const archiveHandle = await rootHandle.getDirectoryHandle('archive', { create: true });
@@ -216,9 +259,11 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
       const relatedIds = abRelatedPeopleIds(person, sections);
       const peopleById = await abLoadPeopleById(peopleHandle, relatedIds);
 
-      abCollectReferencedMedia(person, sections, peopleById).forEach(f => allMedia.add(f));
+      const media = abCollectReferencedMedia(person, sections, peopleById);
+      media.forEach(f => allMedia.add(f));
+      const photoNotes = await abLoadPhotoNotesFor(photosHandle, media);
 
-      const html = abBuildPersonHTML(templateSrc, { person, sections, peopleById });
+      const html = abBuildPersonHTML(templateSrc, { person, sections, peopleById, photoNotes });
       await abWriteText(archiveViewHandle, slug + '.html', html);
 
       indexEntries.push({ slug, name: person.name || slug });
@@ -228,12 +273,72 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
     }
   }
 
+  // Bake art/architecture/cars record-detail pages so tiles that link to
+  // them resolve inside the archive too. Their images are already in
+  // allMedia via abCollectReferencedMedia's Creations-section walk (every
+  // image in these 3 folders), so no extra media collection needed here.
+  notify('Generating art/architecture/cars record pages…');
+  const recordPageTypes = [
+    { folder: 'art', template: 'art.html' },
+    { folder: 'architecture', template: 'architecture.html' },
+    { folder: 'cars', template: 'cars.html' },
+  ];
+  let recordPagesGenerated = 0;
+  for (const { folder, template } of recordPageTypes) {
+    const recordTemplateFh = await viewHandle.getFileHandle(template);
+    const recordTemplateSrc = await (await recordTemplateFh.getFile()).text();
+    for (const record of await abLoadFolderRecords(rootHandle, folder)) {
+      if (!record.id) continue;
+      try {
+        const imgs = record.images || record.photos || [];
+        const photoNotes = await abLoadPhotoNotesFor(photosHandle, imgs);
+        const html = abBakeRecordHTML(recordTemplateSrc, Object.assign({}, record, { photoNotes }));
+        await abWriteText(archiveViewHandle, record.id + '.html', html);
+        recordPagesGenerated++;
+      } catch (e) {
+        console.error('Failed to generate', folder + '/' + record.id, e);
+        failed.push({ slug: folder + '/' + record.id, error: e.message });
+      }
+    }
+  }
+
+  // Bake the Automobiles listing page — a fixed array of every car record,
+  // not parameterized by id, so it's just one file (same name live and
+  // archived, since person.html's link to it is a plain "automobiles.html").
+  notify('Generating automobiles.html…');
+  const automobilesTemplateFh = await viewHandle.getFileHandle('automobiles.html');
+  const automobilesTemplateSrc = await (await automobilesTemplateFh.getFile()).text();
+  const allCars = await abLoadFolderRecords(rootHandle, 'cars');
+  await abWriteText(archiveViewHandle, 'automobiles.html', abBakeRecordHTML(automobilesTemplateSrc, allCars));
+
+  // Bake era pages. Creations doesn't cover eras, and era.html shows every
+  // photo (not just a thumbnail), so collect their full photo/video sets
+  // here rather than relying on abCollectReferencedMedia.
+  notify('Generating era pages…');
+  const eraTemplateFh = await viewHandle.getFileHandle('era.html');
+  const eraTemplateSrc = await (await eraTemplateFh.getFile()).text();
+  const allVideos = new Set();
+  let eraPagesGenerated = 0;
+  for (const era of await abLoadFolderRecords(rootHandle, 'eras')) {
+    if (!era.id) continue;
+    try {
+      (era.photos || []).forEach(f => allMedia.add(f));
+      if (era.hero_video) allVideos.add(era.hero_video);
+      const linkedPerson = era.linked_person ? await abTryReadJSON(peopleHandle, era.linked_person + '.json') : null;
+      const html = abBakeRecordHTML(eraTemplateSrc, { era, linkedPerson });
+      await abWriteText(archiveViewHandle, era.id + '.html', html);
+      eraPagesGenerated++;
+    } catch (e) {
+      console.error('Failed to generate era', era.id, e);
+      failed.push({ slug: 'eras/' + era.id, error: e.message });
+    }
+  }
+
   notify('Copying site assets (fonts, Vue)…');
   const assetsHandle = await rootHandle.getDirectoryHandle('assets');
   await abCopyDirRecursive(assetsHandle, archiveHandle, 'assets');
 
   notify('Copying referenced photos…');
-  const photosHandle = await rootHandle.getDirectoryHandle('photos');
   const archivePhotosHandle = await archiveHandle.getDirectoryHandle('photos', { create: true });
   let copied = 0;
   for (const filename of allMedia) {
@@ -245,14 +350,33 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
     }
   }
 
+  notify('Copying referenced videos…');
+  let videosCopied = 0;
+  if (allVideos.size) {
+    const videosHandle = await rootHandle.getDirectoryHandle('videos');
+    const archiveVideosHandle = await archiveHandle.getDirectoryHandle('videos', { create: true });
+    for (const filename of allVideos) {
+      try {
+        await abCopyFile(videosHandle, filename, archiveVideosHandle);
+        videosCopied++;
+      } catch (e) {
+        console.warn('Referenced video not found, skipping:', filename);
+      }
+    }
+  }
+
   notify('Writing archive/index.html…');
   await abWriteText(archiveHandle, 'index.html', abBuildIndexHTML(indexEntries));
 
   return {
     generated: indexEntries.length,
     total: slugs.length,
+    recordPagesGenerated,
+    eraPagesGenerated,
     mediaCopied: copied,
     mediaTotal: allMedia.size,
+    videosCopied,
+    videosTotal: allVideos.size,
     failed
   };
 }

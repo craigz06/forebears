@@ -97,11 +97,11 @@
   .fact li{ margin-bottom:2px; }
 
   .gallery{
-    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:10px;
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:14px;
   }
   .gallery figure{ margin:0; }
   .gallery img{
-    width:100%; height:150px; object-fit:cover; border-radius:8px; border:1px solid var(--line);
+    width:100%; height:160px; object-fit:cover; border-radius:8px; border:1px solid var(--line);
     box-shadow:var(--shadow); cursor:zoom-in; display:block; background:var(--paper-dim);
     transition:transform .15s ease;
   }
@@ -151,7 +151,7 @@
   </main>
 
   <main class="main" v-else>
-    <a class="back-link" v-if="era.linked_person" :href="'person.html?id=' + era.linked_person">← Back to {{ linkedPersonName }}</a>
+    <a class="back-link" v-if="era.linked_person" :href="personHref(era.linked_person)">← Back to {{ linkedPersonName }}</a>
 
     <div class="hero-video" v-if="era.hero_video">
       <video :src="'../videos/' + era.hero_video" controls preload="metadata"></video>
@@ -203,7 +203,12 @@ const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
 createApp({
   setup(){
-    const eraId = new URLSearchParams(window.location.search).get('id');
+    // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+    // into a baked copy of this file, no fetch() needed. Absent on the
+    // live, server-fetched page — behavior there is unchanged.
+    const archiveData = window.__ARCHIVE_DATA__ || null;
+    const eraId = archiveData ? archiveData.era.id : new URLSearchParams(window.location.search).get('id');
+    function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
 
     const era = ref(null);
     const linkedPerson = ref(null);
@@ -225,6 +230,11 @@ createApp({
     }
 
     async function load(){
+      if(archiveData){
+        era.value = archiveData.era;
+        linkedPerson.value = archiveData.linkedPerson || null;
+        return;
+      }
       try{
         era.value = await fetchJson('../eras/' + eraId + '.json');
       }catch(e){
@@ -240,7 +250,7 @@ createApp({
     load();
 
     return {
-      eraId, era, loadError, linkedPersonName,
+      eraId, era, loadError, linkedPersonName, personHref,
       lightboxUrl, toastMsg, closeLightbox
     };
   }

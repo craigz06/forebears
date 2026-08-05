@@ -12,8 +12,8 @@
   .hero{margin-bottom:18px}
   .hero h1{font-family:'Fraunces',serif}
   .desc{margin-bottom:14px; color:#5A4C3C}
-  .gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px}
-  .gallery img{width:100%; height:140px; object-fit:cover; border-radius:8px; cursor:zoom-in}
+  .gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px}
+  .gallery img{width:100%; height:160px; object-fit:cover; border-radius:8px; cursor:zoom-in}
   .lightbox{position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:zoom-out}
   .lightbox img{max-width:96%; max-height:96%; cursor:default}
   .lightbox-close{
@@ -59,6 +59,13 @@ createApp({
     onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
 
     onMounted(async ()=>{
+      // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+      // into a baked copy of this file, no fetch() needed. Absent on the
+      // live, server-fetched page — behavior there is unchanged.
+      if(window.__ARCHIVE_DATA__){
+        recordData.value = window.__ARCHIVE_DATA__;
+        return;
+      }
       const params = new URLSearchParams(window.location.search);
       const rec = params.get('record');
       if(!rec) return;

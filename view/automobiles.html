@@ -34,10 +34,10 @@
 </head>
 <body>
 <div id="app" class="main">
-  <a class="back" href="person.html?id=craig-colin-cline">← Craig Colin Cline</a>
+  <a class="back" :href="backHref">← Craig Colin Cline</a>
   <h1>Automobiles Modified and Restored</h1>
   <div class="cars-grid">
-    <a class="car-tile" v-for="r in records" :key="r.id" :href="'cars.html?record=' + r.id">
+    <a class="car-tile" v-for="r in records" :key="r.id" :href="carHref(r.id)">
       <img v-if="r.images && r.images.length" class="car-thumb" :src="photoSrc(r.images[0])" :alt="r.title">
       <div v-else class="car-thumb placeholder">no photo</div>
       <div class="car-label">
@@ -52,10 +52,18 @@
 const { createApp, ref, onMounted } = Vue;
 createApp({
   setup(){
-    const records = ref([]);
+    // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+    // (an array of every car record) into a baked copy of this file, no
+    // fetch() needed. Absent on the live, server-fetched page — behavior
+    // there is unchanged.
+    const archiveData = window.__ARCHIVE_DATA__ || null;
+    const records = ref(archiveData || []);
     function photoSrc(filename){ return '../photos/' + filename; }
+    const backHref = archiveData ? 'craig-colin-cline.html' : 'person.html?id=craig-colin-cline';
+    function carHref(id){ return archiveData ? (id + '.html') : ('cars.html?record=' + id); }
 
     onMounted(async ()=>{
+      if(archiveData) return;
       try{
         const idxRes = await fetch('../cars/index.json', {cache:'no-store'});
         const idx = await idxRes.json();
@@ -72,7 +80,7 @@ createApp({
       }catch(e){ console.warn(e); }
     });
 
-    return { records, photoSrc };
+    return { records, photoSrc, backHref, carHref };
   }
 }).mount('#app');
 </script>

@@ -85,9 +85,11 @@ function loadPeopleById(ids) {
 }
 
 // Mirrors every place person.html's template actually renders a <img>/
-// <video> src, so we copy exactly what a generated page needs and nothing
-// more (full record galleries live on art.html/cars.html/etc., which this
-// generator does not produce yet — see README).
+// <video> src. The Creations section (Craig-only) renders every image in
+// architecture/art/cars/books/inventions, not just a thumbnail per record
+// like the tile sections above it — so all of them need to be copied, not
+// just the first per record. (Full record galleries on art.html/cars.html
+// etc. still aren't baked into the archive themselves — see README.)
 function collectReferencedMedia(person, sections, peopleById) {
   const files = new Set();
 
@@ -102,15 +104,12 @@ function collectReferencedMedia(person, sections, peopleById) {
     if (e.photos && e.photos.length) files.add(e.photos[0]);
   });
 
-  ['art', 'architecture', 'inventions', 'books'].forEach(key => {
+  ['architecture', 'art', 'cars', 'books', 'inventions'].forEach(key => {
     (sections[key] || []).forEach(r => {
-      const img = (r.images && r.images.length) ? r.images[0] : (r.photos && r.photos.length ? r.photos[0] : null);
-      if (img) files.add(img);
+      const imgs = r.images || r.photos || [];
+      imgs.forEach(img => files.add(img));
     });
   });
-
-  const carWithPhoto = (sections.cars || []).find(r => r.images && r.images.length);
-  if (carWithPhoto) files.add(carWithPhoto.images[0]);
 
   return [...files];
 }
@@ -152,6 +151,45 @@ function buildPersonHTML(templateSrc, baked) {
     '<script src="person-data.js"></script>',
     '<script src="person-data.js"></script>\n' + dataScript
   );
+}
+
+// Generic version of buildPersonHTML for the record-detail templates
+// (art.html, architecture.html, cars.html, era.html, automobiles.html),
+// which don't load person-data.js but all load Vue the same way.
+function bakeRecordHTML(templateSrc, data) {
+  const dataScript = `<script>window.__ARCHIVE_DATA__ = ${safeJSONForScript(data)};</script>`;
+  return templateSrc.replace(
+    '<script src="../assets/vendor/vue.global.prod.js"></script>',
+    '<script src="../assets/vendor/vue.global.prod.js"></script>\n' + dataScript
+  );
+}
+
+// Reads every record (skipping index.json itself) out of a top-level
+// content folder, e.g. loadFolderRecords('cars') -> all cars/*.json.
+function loadFolderRecords(folder) {
+  const idx = tryReadJSON(path.join(ROOT, folder, 'index.json'));
+  if (!idx || !Array.isArray(idx.files)) return [];
+  const records = [];
+  for (const filename of idx.files) {
+    if (!filename || !filename.endsWith('.json')) continue;
+    const record = tryReadJSON(path.join(ROOT, folder, filename));
+    if (record) records.push(record);
+  }
+  return records;
+}
+
+// Reads photos/<basename>.json (the Photo object type view/cars.html's
+// "+ Add note" writes to) for each filename and returns a map of
+// filename -> notes[]. Missing/note-less files just contribute an empty
+// array, same as the live pages' fetch-based fallback.
+function loadPhotoNotesFor(filenames) {
+  const map = {};
+  for (const filename of filenames) {
+    const base = filename.replace(/\.[^.]+$/, '');
+    const record = tryReadJSON(path.join(ROOT, 'photos', base + '.json'));
+    map[filename] = (record && Array.isArray(record.notes)) ? record.notes : [];
+  }
+  return map;
 }
 
 function escapeHtml(s) {
@@ -196,9 +234,11 @@ function main() {
       const relatedIds = relatedPeopleIds(person, sections);
       const peopleById = loadPeopleById(relatedIds);
 
-      collectReferencedMedia(person, sections, peopleById).forEach(f => allMedia.add(f));
+      const media = collectReferencedMedia(person, sections, peopleById);
+      media.forEach(f => allMedia.add(f));
+      const photoNotes = loadPhotoNotesFor(media);
 
-      const html = buildPersonHTML(templateSrc, { person, sections, peopleById });
+      const html = buildPersonHTML(templateSrc, { person, sections, peopleById, photoNotes });
       const outPath = path.join(OUT, 'view', slug + '.html');
       ensureDir(path.dirname(outPath));
       fs.writeFileSync(outPath, html);
@@ -206,6 +246,60 @@ function main() {
       indexEntries.push({ slug, name: person.name || slug });
     } catch (e) {
       failed.push({ slug, error: e.message });
+    }
+  }
+
+  // Bake art/architecture/cars record-detail pages so tiles that link to
+  // them (art.html?record=..., etc., or their archive-mode equivalents)
+  // actually resolve inside the archive. Their images are already in
+  // allMedia via collectReferencedMedia's Creations-section walk (every
+  // image in these 3 folders), so no extra media collection needed here.
+  const recordPageTypes = [
+    { folder: 'art', template: 'art.html' },
+    { folder: 'architecture', template: 'architecture.html' },
+    { folder: 'cars', template: 'cars.html' },
+  ];
+  let recordPagesGenerated = 0;
+  for (const { folder, template } of recordPageTypes) {
+    const recordTemplateSrc = fs.readFileSync(path.join(ROOT, 'view', template), 'utf8');
+    for (const record of loadFolderRecords(folder)) {
+      if (!record.id) continue;
+      try {
+        const imgs = record.images || record.photos || [];
+        const photoNotes = loadPhotoNotesFor(imgs);
+        const html = bakeRecordHTML(recordTemplateSrc, Object.assign({}, record, { photoNotes }));
+        fs.writeFileSync(path.join(OUT, 'view', record.id + '.html'), html);
+        recordPagesGenerated++;
+      } catch (e) {
+        failed.push({ slug: folder + '/' + record.id, error: e.message });
+      }
+    }
+  }
+
+  // Bake the Automobiles listing page — a fixed array of every car record,
+  // not parameterized by id, so it's just one file (same name live and
+  // archived, since person.html's link to it is a plain "automobiles.html").
+  const automobilesTemplateSrc = fs.readFileSync(path.join(ROOT, 'view', 'automobiles.html'), 'utf8');
+  const allCars = loadFolderRecords('cars');
+  fs.writeFileSync(path.join(OUT, 'view', 'automobiles.html'), bakeRecordHTML(automobilesTemplateSrc, allCars));
+
+  // Bake era pages. Creations doesn't cover eras, and era.html shows every
+  // photo (not just a thumbnail), so collect their full photo/video sets
+  // here rather than relying on collectReferencedMedia.
+  const eraTemplateSrc = fs.readFileSync(path.join(ROOT, 'view', 'era.html'), 'utf8');
+  const allVideos = new Set();
+  let eraPagesGenerated = 0;
+  for (const era of loadFolderRecords('eras')) {
+    if (!era.id) continue;
+    try {
+      (era.photos || []).forEach(f => allMedia.add(f));
+      if (era.hero_video) allVideos.add(era.hero_video);
+      const linkedPerson = era.linked_person ? tryReadJSON(path.join(ROOT, 'people', era.linked_person + '.json')) : null;
+      const html = bakeRecordHTML(eraTemplateSrc, { era, linkedPerson });
+      fs.writeFileSync(path.join(OUT, 'view', era.id + '.html'), html);
+      eraPagesGenerated++;
+    } catch (e) {
+      failed.push({ slug: 'eras/' + era.id, error: e.message });
     }
   }
 
@@ -222,10 +316,23 @@ function main() {
     }
   }
 
+  let videosCopied = 0;
+  for (const filename of allVideos) {
+    const src = path.join(ROOT, 'videos', filename);
+    if (fs.existsSync(src)) {
+      copyFile(src, path.join(OUT, 'videos', filename));
+      videosCopied++;
+    } else {
+      console.warn('  ! referenced video not found, skipping:', filename);
+    }
+  }
+
   fs.writeFileSync(path.join(OUT, 'index.html'), buildIndexHTML(indexEntries));
 
   console.log(`Generated ${indexEntries.length}/${slugs.length} person pages -> ${path.relative(ROOT, OUT)}/view/`);
+  console.log(`Generated ${recordPagesGenerated} art/architecture/cars record pages, ${eraPagesGenerated} era pages, and automobiles.html`);
   console.log(`Copied ${copied}/${allMedia.size} referenced media files -> ${path.relative(ROOT, OUT)}/photos/`);
+  console.log(`Copied ${videosCopied}/${allVideos.size} referenced videos -> ${path.relative(ROOT, OUT)}/videos/`);
   console.log(`Wrote ${path.relative(ROOT, OUT)}/index.html`);
   if (failed.length) {
     console.log('Failed:');
