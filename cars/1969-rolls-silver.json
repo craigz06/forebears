@@ -4,7 +4,10 @@
   "title": "1969 Rolls Silver...",
   "date": "1969",
   "description": "",
-  "images": [],
+  "images": [
+    "a-69-1.png",
+    "a-69-2.png"
+  ],
   "tags": [
     "automobiles"
   ]

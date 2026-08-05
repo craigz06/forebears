@@ -10,7 +10,10 @@
     "date": "March 28, 2021",
     "place": ""
   },
-  "parents": ["frank-louis-claus", "helene-emily-oneil-claus"],
+  "parents": [
+    "frank-louis-claus",
+    "helene-emily-oneil-claus"
+  ],
   "spouses": [
     "steven-g-cline-md",
     "william-donald-stone-md-dds"
@@ -28,8 +31,13 @@
   "education": [],
   "military": "",
   "biography": "Gloria Helene Claus was born September 13, 1923 in Buffalo, NY, and spent her childhood there and in Ridgeway, Ontario, Canada. She married Dr. Steven G. Cline in 1946 and moved to Atlanta, GA, where they raised three children before divorcing in 1976. In 1967 she married Dr. William D. Stone, and the two spent many years together in Atlanta and at their home on Lake Allatoona in Woodstock, GA. She was an accomplished artist, an avid organic gardener, a world traveler, and a great cook. She died March 28, 2021, at age 97.",
-  "photos": ["mom-indexpic-2-311x252.jpeg", "mom-bill-600x407.jpeg"],
+  "photos": [
+    "mom-indexpic-2-311x252.jpeg",
+    "mom-bill-600x407.jpeg"
+  ],
   "videos": [],
-  "stories": [],
+  "stories": [
+    "on-being-teased"
+  ],
   "updated": "2026-08-01 12:22"
 }

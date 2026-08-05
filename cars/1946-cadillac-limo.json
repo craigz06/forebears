@@ -4,7 +4,13 @@
   "title": "1946 Cadillac Limo",
   "date": "1946",
   "description": "",
-  "images": [],
+  "images": [
+    "a-46-1.png",
+    "a-46-2.png",
+    "a-46-3.png",
+    "a-46-4.png",
+    "a-46-5.png"
+  ],
   "tags": [
     "automobiles"
   ]

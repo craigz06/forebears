@@ -4,7 +4,14 @@
   "title": "2005 350Z",
   "date": "2005",
   "description": "",
-  "images": [],
+  "images": [
+    "a-05-1.png",
+    "a-05-2.png",
+    "a-05-3.png",
+    "a-05-5.png",
+    "a-05-6.png",
+    "a-05-7.png"
+  ],
   "tags": [
     "automobiles"
   ]

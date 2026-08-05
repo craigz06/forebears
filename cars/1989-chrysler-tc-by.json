@@ -4,7 +4,12 @@
   "title": "1989 Chrysler TC by...",
   "date": "1989",
   "description": "",
-  "images": [],
+  "images": [
+    "a-89tc-1.png",
+    "a-89tc-2.png",
+    "a-89tc-3.png",
+    "a-89tc-4.png"
+  ],
   "tags": [
     "automobiles"
   ]

@@ -4,7 +4,9 @@
   "title": "1968 MGB",
   "date": "1968",
   "description": "",
-  "images": [],
+  "images": [
+    "a-mg-rev.png"
+  ],
   "tags": [
     "automobiles"
   ]

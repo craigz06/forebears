@@ -4,7 +4,12 @@
   "title": "1963 Correct Craft Boat",
   "date": "1963",
   "description": "",
-  "images": [],
+  "images": [
+    "a-cc-1.png",
+    "a-cc-2.png",
+    "a-cc-3.png",
+    "a-cc-4.png"
+  ],
   "tags": [
     "automobiles"
   ]

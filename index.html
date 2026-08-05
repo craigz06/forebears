@@ -78,6 +78,24 @@
   }
 
   @media (max-width:560px){ .choices{ flex-direction:column; align-items:stretch; } .choice{ max-width:none; } }
+
+  button.choice{
+    font-family:inherit; font-size:inherit; cursor:pointer;
+  }
+  button.choice:disabled{ cursor:default; opacity:0.55; }
+  button.choice:disabled:hover{ transform:none; }
+  button.choice:disabled .choice-title{ color:var(--walnut-dark); }
+
+  .archive-status{
+    width:100%; max-width:320px; flex:1 1 260px; text-align:left;
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); padding:16px 18px; margin-top:0;
+    font-family:'JetBrains Mono', monospace; font-size:0.74rem; color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .archive-status.done{ color:var(--sage); }
+  .archive-status.error{ color:var(--rust); }
+  .archive-status a{ color:var(--brass); }
 </style>
 </head>
 <body>
@@ -96,9 +114,67 @@
         <div class="choice-title">View the Family</div>
         <div class="choice-desc">Start with Craig's page — bios, photos, and the people connected to him.</div>
       </a>
+      <button class="choice" id="archive-btn" type="button">
+        <div class="choice-eyebrow">Zero-server</div>
+        <div class="choice-title">Save Archive to SD Card</div>
+        <div class="choice-desc" id="archive-desc">Bakes a self-contained copy of the whole site into archive/ — no server needed, opens straight from disk. Connect your Forebears folder to run it.</div>
+      </button>
+      <div class="archive-status" id="archive-status" style="display:none"></div>
     </div>
 
     <div class="footnote">Connect your Forebears folder on the next page to load the archive.</div>
   </div>
+
+<script src="archive-builder.js"></script>
+<script>
+(function(){
+  const btn = document.getElementById('archive-btn');
+  const desc = document.getElementById('archive-desc');
+  const status = document.getElementById('archive-status');
+
+  if(!('showDirectoryPicker' in window)){
+    btn.disabled = true;
+    desc.textContent = 'Needs Chrome or Edge (File System Access API) — open this page there to generate the archive.';
+    return;
+  }
+
+  function log(msg){
+    status.style.display = 'block';
+    status.textContent = msg;
+  }
+
+  btn.addEventListener('click', async function(){
+    btn.disabled = true;
+    status.className = 'archive-status';
+    log('Choose your Forebears folder…');
+    let rootHandle;
+    try{
+      rootHandle = await window.showDirectoryPicker();
+    }catch(e){
+      if(e.name !== 'AbortError'){ status.className = 'archive-status error'; log('Could not open folder picker: ' + e.message); }
+      btn.disabled = false;
+      return;
+    }
+
+    try{
+      const result = await generateArchiveInBrowser(rootHandle, log);
+      status.className = 'archive-status done';
+      let msg = 'Done — ' + result.generated + '/' + result.total + ' people, ' +
+        result.mediaCopied + '/' + result.mediaTotal + ' photos, written to archive/ inside ' + rootHandle.name + '.';
+      if(result.failed.length){
+        msg += ' ' + result.failed.length + ' failed: ' + result.failed.map(f=>f.slug).join(', ') + '.';
+        status.className = 'archive-status error';
+      }
+      log(msg);
+    }catch(e){
+      console.error(e);
+      status.className = 'archive-status error';
+      log('Generation failed: ' + e.message + ' — make sure you picked the Forebears folder itself (the one with people/, photos/, view/ inside it).');
+    }finally{
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
 </body>
 </html>

@@ -4,7 +4,11 @@
   "title": "1981 Chevrolet...",
   "date": "1981",
   "description": "",
-  "images": [],
+  "images": [
+    "a-81-1.png",
+    "a-81-2.png",
+    "a-81-3.png"
+  ],
   "tags": [
     "automobiles"
   ]

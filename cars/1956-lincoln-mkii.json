@@ -4,7 +4,12 @@
   "title": "1956 Lincoln MkII",
   "date": "1956",
   "description": "",
-  "images": [],
+  "images": [
+    "a-56-1.png",
+    "a-56-2.png",
+    "a-56-3.png",
+    "a-56-4.png"
+  ],
   "tags": [
     "automobiles"
   ]
