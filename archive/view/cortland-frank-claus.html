@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
 <script src="person-data.js"></script>
-<script>window.__ARCHIVE_DATA__ = {"person":{"id":"cortland-frank-claus","name":"Cortland Frank Claus","nickname":"Bud","birth":{"date":"May 25, 1925","place":"Ridgeway, Ontario, Canada"},"death":{"date":"","place":""},"parents":["frank-louis-claus","helene-emily-oneil-claus"],"spouses":[],"children":["colin-drew-claus"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's brother. He married Marylou Derendinger, and their children were Colin Drew Claus and Cynthia Doreen Claus Canavan.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"frank-louis-claus":{"id":"frank-louis-claus","name":"Frank Louis Claus","nickname":"","birth":{"date":"August 26, 1882","place":"Ridgeway, Ontario, Canada"},"death":{"date":"October 29, 1970","place":"Buffalo, NY"},"parents":[],"spouses":["helene-emily-oneil-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's father. He and his wife, Helen, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"helene-emily-oneil-claus":{"id":"helene-emily-oneil-claus","name":"Helene Emily O'Neil Claus","nickname":"Helen","birth":{"date":"May 10, 1895","place":"Buffalo, NY"},"death":{"date":"December 11, 1951","place":"Buffalo, NY"},"parents":[],"spouses":["frank-louis-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's mother. She and her husband, Frank, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children. She painted alongside her daughter Gloria.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"colin-drew-claus":{"id":"colin-drew-claus","name":"Colin Drew Claus","nickname":"","birth":{"date":"February 11, 1965","place":"Buffalo, NY"},"death":{"date":"","place":""},"parents":["cortland-frank-claus"],"spouses":[],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's cousin, son of Bud and Marylou Claus. He married Valerie Ann Bean, and their children are Marissa Shawn Claus Deyong and Jarad Thomas Claus. Marissa married Adam Isaac Deyong (who died March 6, 2021), and their children are Anna Sophia and Jonah Simon Deyong.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
+<script>window.__ARCHIVE_DATA__ = {"person":{"id":"cortland-frank-claus","name":"Cortland Frank Claus","nickname":"Bud","birth":{"date":"May 25, 1925","place":"Ridgeway, Ontario, Canada"},"death":{"date":"","place":""},"parents":["frank-louis-claus","helene-emily-oneil-claus"],"spouses":[],"children":["colin-drew-claus"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's brother. He married Marylou Derendinger, and their children were Colin Drew Claus and Cynthia Doreen Claus Canavan.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"jobs":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"frank-louis-claus":{"id":"frank-louis-claus","name":"Frank Louis Claus","nickname":"","birth":{"date":"August 26, 1882","place":"Ridgeway, Ontario, Canada"},"death":{"date":"October 29, 1970","place":"Buffalo, NY"},"parents":[],"spouses":["helene-emily-oneil-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's father. He and his wife, Helen, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"helene-emily-oneil-claus":{"id":"helene-emily-oneil-claus","name":"Helene Emily O'Neil Claus","nickname":"Helen","birth":{"date":"May 10, 1895","place":"Buffalo, NY"},"death":{"date":"December 11, 1951","place":"Buffalo, NY"},"parents":[],"spouses":["frank-louis-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's mother. She and her husband, Frank, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children. She painted alongside her daughter Gloria.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"colin-drew-claus":{"id":"colin-drew-claus","name":"Colin Drew Claus","nickname":"","birth":{"date":"February 11, 1965","place":"Buffalo, NY"},"death":{"date":"","place":""},"parents":["cortland-frank-claus"],"spouses":[],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's cousin, son of Bud and Marylou Claus. He married Valerie Ann Bean, and their children are Marissa Shawn Claus Deyong and Jarad Thomas Claus. Marissa married Adam Isaac Deyong (who died March 6, 2021), and their children are Anna Sophia and Jonah Simon Deyong.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
 <style>
   :root{
     --paper:#F2E8D5;
@@ -296,7 +296,21 @@
       </div>
     </div>
 
-    
+    <div v-if="jobTiles.length">
+      <div class="section-label">Career</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="j in jobTiles" :key="j.id" :href="jobHref(j.id)">
+          <img v-if="j.thumbSrc" class="era-thumb" :src="j.thumbSrc" :alt="j.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ j.title }}</div>
+            <div class="era-years" v-if="j.years">{{ j.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+
 
     <div v-if="sections.stories && sections.stories.length">
       <div class="section-label">Stories</div>
@@ -353,7 +367,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -392,10 +406,11 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
+    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
-    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
+    const sections = reactive({ eras: [], jobs: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
     const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
@@ -448,6 +463,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
@@ -482,8 +498,8 @@ createApp({
 
     return {
       personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay,
-      eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
-      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, recordHref
+      eraTiles, jobTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
+      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, jobHref, recordHref
     };
   }
 }).mount('#app');

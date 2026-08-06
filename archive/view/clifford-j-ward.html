@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
 <script src="person-data.js"></script>
-<script>window.__ARCHIVE_DATA__ = {"person":{"id":"clifford-j-ward","name":"Clifford J. Ward","nickname":"","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["jacqueline-coleman-ward"],"children":["elizabeth-m-ward","jackie-ward-dowling"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's father, married to Jacqueline Coleman Ward. Family pages also list William J. Ward Jr., Warren W. Ward, and Rosemary Ward alongside him, though their exact relation to him isn't specified in the source material.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"jacqueline-coleman-ward":{"id":"jacqueline-coleman-ward","name":"Jacqueline Coleman Ward","nickname":"","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["clifford-j-ward"],"children":["elizabeth-m-ward","jackie-ward-dowling"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's mother. Her siblings were John Coleman, Tom Coleman, and Frank Coleman.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"elizabeth-m-ward":{"id":"elizabeth-m-ward","name":"Elizabeth M. Ward","nickname":"Liz","birth":{"date":"February 7, 1953","place":"New York, NY"},"death":{"date":"","place":""},"parents":["clifford-j-ward","jacqueline-coleman-ward"],"spouses":["craig-colin-cline"],"children":["nicolas-steenland","maria-steenland"],"placesLived":["Queens, NY"],"occupation":"Epidemeologist","education":["Univ. of Pennsylvania, PhD"],"military":"Coast Guard, Captain","biography":"Raised in a one-bedroom garden apartment, Liz built a career as a lead epidemiologist and legal consultant, taking on corporate malfeasance to protect public health. She married Craig Cline in 2010 in Marietta, GA, and the two moved to Asheville, NC in 2012 — blending her children, Nicolas and Maria, with Craig's daughters, Alison and Stevie.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"jackie-ward-dowling":{"id":"jackie-ward-dowling","name":"Jackie Ward Dowling","nickname":"Jackie","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":["clifford-j-ward","jacqueline-coleman-ward"],"spouses":[],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's sister.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
+<script>window.__ARCHIVE_DATA__ = {"person":{"id":"clifford-j-ward","name":"Clifford J. Ward","nickname":"","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["jacqueline-coleman-ward"],"children":["elizabeth-m-ward","jackie-ward-dowling"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's father, married to Jacqueline Coleman Ward. Family pages also list William J. Ward Jr., Warren W. Ward, and Rosemary Ward alongside him, though their exact relation to him isn't specified in the source material.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"jobs":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"jacqueline-coleman-ward":{"id":"jacqueline-coleman-ward","name":"Jacqueline Coleman Ward","nickname":"","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["clifford-j-ward"],"children":["elizabeth-m-ward","jackie-ward-dowling"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's mother. Her siblings were John Coleman, Tom Coleman, and Frank Coleman.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"elizabeth-m-ward":{"id":"elizabeth-m-ward","name":"Elizabeth M. Ward","nickname":"Liz","birth":{"date":"February 7, 1953","place":"New York, NY"},"death":{"date":"","place":""},"parents":["clifford-j-ward","jacqueline-coleman-ward"],"spouses":["craig-colin-cline"],"children":["nicolas-steenland","maria-steenland"],"placesLived":["Queens, NY"],"occupation":"Epidemeologist","education":["Univ. of Pennsylvania, PhD"],"military":"Coast Guard, Captain","biography":"Raised in a one-bedroom garden apartment, Liz built a career as a lead epidemiologist and legal consultant, taking on corporate malfeasance to protect public health. She married Craig Cline in 2010 in Marietta, GA, and the two moved to Asheville, NC in 2012 — blending her children, Nicolas and Maria, with Craig's daughters, Alison and Stevie.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"jackie-ward-dowling":{"id":"jackie-ward-dowling","name":"Jackie Ward Dowling","nickname":"Jackie","birth":{"date":"","place":""},"death":{"date":"","place":""},"parents":["clifford-j-ward","jacqueline-coleman-ward"],"spouses":[],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Elizabeth (Liz) Ward's sister.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
 <style>
   :root{
     --paper:#F2E8D5;
@@ -296,7 +296,21 @@
       </div>
     </div>
 
-    
+    <div v-if="jobTiles.length">
+      <div class="section-label">Career</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="j in jobTiles" :key="j.id" :href="jobHref(j.id)">
+          <img v-if="j.thumbSrc" class="era-thumb" :src="j.thumbSrc" :alt="j.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ j.title }}</div>
+            <div class="era-years" v-if="j.years">{{ j.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+
 
     <div v-if="sections.stories && sections.stories.length">
       <div class="section-label">Stories</div>
@@ -353,7 +367,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -392,10 +406,11 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
+    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
-    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
+    const sections = reactive({ eras: [], jobs: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
     const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
@@ -448,6 +463,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
@@ -482,8 +498,8 @@ createApp({
 
     return {
       personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay,
-      eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
-      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, recordHref
+      eraTiles, jobTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
+      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, jobHref, recordHref
     };
   }
 }).mount('#app');

@@ -5,7 +5,7 @@
 // Terminal or Node involved. Keep this in sync with generate-archive.js
 // if the data-loading or media-collection logic there changes.
 
-const ARCHIVE_FOLDERS = ['eras', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
+const ARCHIVE_FOLDERS = ['eras', 'jobs', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
 
 async function abReadJSON(dirHandle, filename) {
   const fh = await dirHandle.getFileHandle(filename);
@@ -44,7 +44,7 @@ async function abFindRecordsForPerson(rootHandle, folder, personId, person) {
       matches.push({ id: filename, file: filename });
     }
   }
-  if (folder === 'eras') {
+  if (folder === 'eras' || folder === 'jobs') {
     matches.sort((a, b) => {
       const ay = abParseStartYear(a.years), by = abParseStartYear(b.years);
       if (ay === by) return (a.id || '').localeCompare(b.id || '');
@@ -334,6 +334,27 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
     }
   }
 
+  // Bake job pages — same reasoning/shape as era pages above (job.html is
+  // a copy of era.html reading jobs/ instead of eras/).
+  notify('Generating job pages…');
+  const jobTemplateFh = await viewHandle.getFileHandle('job.html');
+  const jobTemplateSrc = await (await jobTemplateFh.getFile()).text();
+  let jobPagesGenerated = 0;
+  for (const job of await abLoadFolderRecords(rootHandle, 'jobs')) {
+    if (!job.id) continue;
+    try {
+      (job.photos || []).forEach(f => allMedia.add(f));
+      if (job.hero_video) allVideos.add(job.hero_video);
+      const linkedPerson = job.linked_person ? await abTryReadJSON(peopleHandle, job.linked_person + '.json') : null;
+      const html = abBakeRecordHTML(jobTemplateSrc, { job, linkedPerson });
+      await abWriteText(archiveViewHandle, job.id + '.html', html);
+      jobPagesGenerated++;
+    } catch (e) {
+      console.error('Failed to generate job', job.id, e);
+      failed.push({ slug: 'jobs/' + job.id, error: e.message });
+    }
+  }
+
   notify('Copying site assets (fonts, Vue)…');
   const assetsHandle = await rootHandle.getDirectoryHandle('assets');
   await abCopyDirRecursive(assetsHandle, archiveHandle, 'assets');
@@ -373,6 +394,7 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
     total: slugs.length,
     recordPagesGenerated,
     eraPagesGenerated,
+    jobPagesGenerated,
     mediaCopied: copied,
     mediaTotal: allMedia.size,
     videosCopied,

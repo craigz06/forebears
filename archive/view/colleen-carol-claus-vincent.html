@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
 <script src="person-data.js"></script>
-<script>window.__ARCHIVE_DATA__ = {"person":{"id":"colleen-carol-claus-vincent","name":"Colleen Carol Claus Vincent","nickname":"Coleen","birth":{"date":"November 8, 1932","place":"Ridgeway, Ontario, Canada"},"death":{"date":"","place":""},"parents":["frank-louis-claus","helene-emily-oneil-claus"],"spouses":["charles-martin-vincent"],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's sister. She married Charles \"Marty\" Vincent; their daughter, Valerie Vincent Good, was born February 14, 1957 in Englewood, NJ.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"frank-louis-claus":{"id":"frank-louis-claus","name":"Frank Louis Claus","nickname":"","birth":{"date":"August 26, 1882","place":"Ridgeway, Ontario, Canada"},"death":{"date":"October 29, 1970","place":"Buffalo, NY"},"parents":[],"spouses":["helene-emily-oneil-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's father. He and his wife, Helen, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"helene-emily-oneil-claus":{"id":"helene-emily-oneil-claus","name":"Helene Emily O'Neil Claus","nickname":"Helen","birth":{"date":"May 10, 1895","place":"Buffalo, NY"},"death":{"date":"December 11, 1951","place":"Buffalo, NY"},"parents":[],"spouses":["frank-louis-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's mother. She and her husband, Frank, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children. She painted alongside her daughter Gloria.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"charles-martin-vincent":{"id":"charles-martin-vincent","name":"Charles Martin Vincent","nickname":"Marty","birth":{"date":"April 10, 1930","place":"Toledo, OH"},"death":{"date":"","place":""},"parents":[],"spouses":["colleen-carol-claus-vincent"],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Married to Colleen Claus Vincent.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
+<script>window.__ARCHIVE_DATA__ = {"person":{"id":"colleen-carol-claus-vincent","name":"Colleen Carol Claus Vincent","nickname":"Coleen","birth":{"date":"November 8, 1932","place":"Ridgeway, Ontario, Canada"},"death":{"date":"","place":""},"parents":["frank-louis-claus","helene-emily-oneil-claus"],"spouses":["charles-martin-vincent"],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's sister. She married Charles \"Marty\" Vincent; their daughter, Valerie Vincent Good, was born February 14, 1957 in Englewood, NJ.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"jobs":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"frank-louis-claus":{"id":"frank-louis-claus","name":"Frank Louis Claus","nickname":"","birth":{"date":"August 26, 1882","place":"Ridgeway, Ontario, Canada"},"death":{"date":"October 29, 1970","place":"Buffalo, NY"},"parents":[],"spouses":["helene-emily-oneil-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's father. He and his wife, Helen, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"helene-emily-oneil-claus":{"id":"helene-emily-oneil-claus","name":"Helene Emily O'Neil Claus","nickname":"Helen","birth":{"date":"May 10, 1895","place":"Buffalo, NY"},"death":{"date":"December 11, 1951","place":"Buffalo, NY"},"parents":[],"spouses":["frank-louis-claus"],"children":["cortland-frank-claus","virginia-lillian-claus-heinz","colleen-carol-claus-vincent","gloria-cline-stone"],"placesLived":["Buffalo, NY","Ridgeway, Ontario, Canada"],"occupation":"","education":[],"military":"","biography":"Gloria (Cline) Stone's mother. She and her husband, Frank, lived in Buffalo, NY and Ridgeway, Ontario, Canada, and raised four children. She painted alongside her daughter Gloria.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"charles-martin-vincent":{"id":"charles-martin-vincent","name":"Charles Martin Vincent","nickname":"Marty","birth":{"date":"April 10, 1930","place":"Toledo, OH"},"death":{"date":"","place":""},"parents":[],"spouses":["colleen-carol-claus-vincent"],"children":[],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Married to Colleen Claus Vincent.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
 <style>
   :root{
     --paper:#F2E8D5;
@@ -296,7 +296,21 @@
       </div>
     </div>
 
-    
+    <div v-if="jobTiles.length">
+      <div class="section-label">Career</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="j in jobTiles" :key="j.id" :href="jobHref(j.id)">
+          <img v-if="j.thumbSrc" class="era-thumb" :src="j.thumbSrc" :alt="j.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ j.title }}</div>
+            <div class="era-years" v-if="j.years">{{ j.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+
 
     <div v-if="sections.stories && sections.stories.length">
       <div class="section-label">Stories</div>
@@ -353,7 +367,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -392,10 +406,11 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
+    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
-    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
+    const sections = reactive({ eras: [], jobs: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
     const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
@@ -448,6 +463,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
@@ -482,8 +498,8 @@ createApp({
 
     return {
       personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay,
-      eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
-      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, recordHref
+      eraTiles, jobTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
+      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, jobHref, recordHref
     };
   }
 }).mount('#app');

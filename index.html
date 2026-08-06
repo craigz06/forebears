@@ -160,7 +160,7 @@
       const result = await generateArchiveInBrowser(rootHandle, log);
       status.className = 'archive-status done';
       let msg = 'Done — ' + result.generated + '/' + result.total + ' people, ' +
-        result.recordPagesGenerated + ' art/architecture/cars pages, ' + result.eraPagesGenerated + ' era pages, ' +
+        result.recordPagesGenerated + ' art/architecture/cars pages, ' + result.eraPagesGenerated + ' era pages, ' + result.jobPagesGenerated + ' job pages, ' +
         result.mediaCopied + '/' + result.mediaTotal + ' photos, ' + result.videosCopied + '/' + result.videosTotal + ' videos, ' +
         'written to archive/ inside ' + rootHandle.name + '.';
       if(result.failed.length){

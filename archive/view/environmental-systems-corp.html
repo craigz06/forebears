@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forebears — Job</title>
+<link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
+<script src="../assets/vendor/vue.global.prod.js"></script>
+<script>window.__ARCHIVE_DATA__ = {"job":{"id":"environmental-systems-corp","title":"Environmental Systems Corp","years":"c. 1970","role":"Entry-level staff","linked_person":"craig-colin-cline","person_id":"craig-colin-cline","hero_video":"","story_excerpt":"Early environmental engineering firm — thermal discharge studies and aerial infrared photography of power plant runoff.","places":["Knoxville, TN"],"photos":[],"updated":"2026-08-05"},"linkedPerson":{"id":"craig-colin-cline","name":"Craig Colin Cline","nickname":"Craig","birth":{"date":"August 10, 1948","place":"Buffalo, NY"},"death":{"date":"","place":""},"parents":["steven-g-cline-md","gloria-cline-stone"],"stepParents":["william-donald-stone-md-dds"],"spouses":["janice-b-cline","elizabeth-m-ward"],"children":["alison-beechner","stevie-mcleod"],"placesLived":["1476 Peachtree Battle Ave, Atlanta, GA","265 Castleair Drive, Kennesaw, GA","630 Kurtz Road, Marietta, GA","1383 Northview Ave, Atlanta, GA","30 5th Street, Atlanta, GA","231 Hale Street, Atlanta, GA","10 Sunset Terrace, Asheville, NC"],"occupation":"Architect, Engineer","education":["Lovett School and Northside High School, Atlanta, GA (1962–1965)","BA, University of Tennessee 1975","Les Écoles d'art américaines de Fontainebleau  1974"],"military":"4F","biography":"Born in Buffalo, NY and raised mostly in Atlanta from age five, Craig combined a technical, scientific curiosity with early exposure to art and craftsmanship through his family. He attended the Lovett School and Northside High School (1962–1965), then studied engineering at the University of Tennessee before shifting toward painting and filmmaking, earning his BA in 1975 and studying at Les Écoles d'art américaines de Fontainebleau in 1974. He got his start in film with Storer Studios in the early 1970s, then spent the following decades moving between architecture, engineering, and design — at Environmental Systems Corporation, Nimslo 3D Research, Architectural Design Concepts, his own firm Craig Associates AIA, and finally Pacific Interiors — before retiring to Asheville, NC in 2012.","photos":["H2.mp4","img-4522-600x450.jpeg","img-4091-600x450.jpeg","57-craig-3-2s-600x400.jpeg","superman-600x900.jpeg","craigyahoo-180x192.jpeg","dsc-14-600x403.jpeg","dsc-111-600x402.jpeg","img-3757-7-600x601.jpeg","anacola-falls-river-600x550.jpeg","skinny-dip-falls-600x800.jpeg","florence-1400x939.jpg","ny-trip-lovett-kids-copy-870x937.jpg","airplaine1-i75-1979-900x519.jpg","lizcraig-2-876x851.jpg","group-smiling-1400x963.jpg","img-4170-1400x1050.jpeg","img-4321-1400x1050.jpeg","img-4554-1400x1050.jpeg","fam-frank-helene-claus-small-4-307x217.jpeg","fam-grand-pop-1898-small-1-394x328.jpeg","grandkids-1-600x801.jpeg"],"videos":[],"stories":["good-outweighing-the-bad","on-death","on-being-teased"],"eras":["childhood-1948-1954","youth-1955-1964","high-school-1962-1965","college-1966-1975","working-world-1976-2012","retirement-2012-present"],"updated":"2026-08-04 15:58"}};</script>
+<style>
+  :root{
+    --paper:#F2E8D5;
+    --paper-dim:#EADFC6;
+    --card:#FBF6EA;
+    --ink:#2B2118;
+    --ink-soft:#5A4C3C;
+    --walnut:#5C4030;
+    --walnut-dark:#3E2B20;
+    --brass:#9C7A2E;
+    --brass-bright:#B8923F;
+    --sage:#6F7C5D;
+    --rust:#9C4A35;
+    --thread:#C9B892;
+    --line:#D8C9A3;
+    --shadow: 0 1px 0 rgba(43,33,24,0.06), 0 8px 24px -12px rgba(43,33,24,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #FBF3DE 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, serif;
+    min-height:100vh;
+  }
+  ::selection{ background:var(--thread); color:var(--walnut-dark); }
+  a{ color:var(--brass); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 48px; border-bottom:1px solid var(--line);
+    background: linear-gradient(180deg, #EFE3C6, #E8D9B6);
+  }
+  @media (max-width:640px){ .topbar{ padding:16px 18px; } }
+  .brand{ font-family:'Fraunces', serif; font-weight:600; font-style:italic; font-size:1.4rem; color:var(--walnut-dark); }
+  .brand a{ color:inherit; }
+  .brand-sub{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); }
+
+  .main{ padding:44px 48px 80px; max-width:960px; margin:0 auto; }
+  @media (max-width: 640px){ .main{ padding:28px 18px 60px; } }
+
+  .hero-prompt{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.18; color:var(--walnut-dark); margin:0 0 6px;
+  }
+  .hero-sub{ font-size:0.95rem; color:var(--ink-soft); margin:0 0 30px; max-width:60ch; line-height:1.55; }
+  .empty-note{ font-size:0.9rem; color:var(--ink-soft); line-height:1.6; }
+
+  .back-link{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.05em; display:inline-block; margin-bottom:18px; }
+
+  .hero-video{
+    width:100%; max-height:520px; border-radius:12px; overflow:hidden; border:1px solid var(--line);
+    box-shadow:var(--shadow); margin-bottom:22px; background:#000;
+  }
+  .hero-video video, .hero-video img{ width:100%; max-height:520px; display:block; object-fit:cover; }
+
+  .ledger{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); position:relative; padding:34px 36px 30px; margin-bottom:28px;
+  }
+  .ledger::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:46px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 26px, var(--thread) 26px 27px);
+    opacity:0.35; border-radius:10px 0 0 10px; pointer-events:none;
+  }
+  .ledger-head{ padding-left:34px; margin-bottom:20px; border-bottom:1px dashed var(--line); padding-bottom:18px; }
+  .ledger-id{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); letter-spacing:0.03em; }
+  .ledger-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--walnut-dark); margin:2px 0 4px; }
+  .ledger-dates{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+  .ledger-person{ font-size:0.85rem; color:var(--ink-soft); margin-top:2px; }
+
+  .content-inner{ padding-left:34px; }
+  .bio{ font-size:1rem; line-height:1.7; margin:0 0 8px; max-width:70ch; }
+
+  .section-label{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1.15rem;
+    color:var(--walnut); margin:26px 0 12px; padding-left:34px;
+  }
+
+  .fact{ padding-left:34px; margin-bottom:8px; }
+  .fact label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.09em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;
+  }
+  .fact ul{ margin:2px 0 0; padding-left:18px; }
+  .fact li{ margin-bottom:2px; }
+
+  .gallery{
+    padding-left:34px; display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:14px;
+  }
+  .gallery figure{ margin:0; }
+  .gallery img{
+    width:100%; height:160px; object-fit:cover; border-radius:8px; border:1px solid var(--line);
+    box-shadow:var(--shadow); cursor:zoom-in; display:block; background:var(--paper-dim);
+    transition:transform .15s ease;
+  }
+  .gallery img:hover{ transform:translateY(-2px); }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(43,33,24,0.85); display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:40px; cursor:zoom-out;
+  }
+  .lightbox img{ max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,0.5); cursor:default; }
+  .lightbox-close{
+    position:fixed; top:20px; right:24px; width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(251,246,234,0.5); background:rgba(43,33,24,0.6); color:var(--paper);
+    font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-close:hover{ background:rgba(43,33,24,0.9); }
+
+  .toast{
+    position:fixed; bottom:22px; right:22px; background:var(--walnut-dark); color:var(--paper);
+    padding:12px 18px; border-radius:8px; font-size:0.85rem; box-shadow:0 10px 30px -8px rgba(0,0,0,0.4);
+    max-width:340px; z-index:50;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div>
+      <div class="brand"><a href="../index.html">Forebears</a></div>
+      <div class="brand-sub">job page</div>
+    </div>
+  </div>
+
+  <main class="main" v-if="!jobId">
+    <h1 class="hero-prompt">No job specified.</h1>
+    <p class="hero-sub">Open this page with a job id in the URL, e.g. job.html?id=storer-studios.</p>
+  </main>
+
+  <main class="main" v-else-if="loadError">
+    <h1 class="hero-prompt">Couldn't load this page.</h1>
+    <p class="hero-sub">{{ loadError }} Make sure you're running this through the local server (see README — "Running it locally"), not opened directly from disk.</p>
+  </main>
+
+  <main class="main" v-else-if="!job">
+    <p class="empty-note">Loading jobs/{{ jobId }}.json…</p>
+  </main>
+
+  <main class="main" v-else>
+    <a class="back-link" v-if="job.linked_person" :href="personHref(job.linked_person)">← Back to {{ linkedPersonName }}</a>
+
+    <div class="hero-video" v-if="job.hero_video">
+      <video :src="'../videos/' + job.hero_video" controls preload="metadata"></video>
+    </div>
+    <div class="hero-video" v-else-if="job.photos && job.photos.length">
+      <img :src="'../photos/' + job.photos[0]" :alt="job.title">
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-head">
+        <div class="ledger-id">jobs/{{ job.id }}.json</div>
+        <div class="ledger-title">{{ job.title || job.id }}</div>
+        <div class="ledger-dates" v-if="job.role">{{ job.role }}<span v-if="job.years"> · {{ job.years }}</span></div>
+        <div class="ledger-dates" v-else-if="job.years">{{ job.years }}</div>
+        <div class="ledger-person" v-if="job.linked_person">Part of {{ linkedPersonName }}'s story</div>
+      </div>
+
+      <div class="content-inner">
+        <p class="bio" v-if="job.story_excerpt">{{ job.story_excerpt }}</p>
+      </div>
+    </div>
+
+    <div class="fact" v-if="job.places && job.places.length">
+      <label>Places</label>
+      <ul><li v-for="(p,i) in job.places" :key="i">{{ p }}</li></ul>
+    </div>
+
+    <div class="section-label">Photos</div>
+    <div class="gallery" v-if="job.photos && job.photos.length">
+      <figure v-for="filename in job.photos" :key="filename">
+        <img :src="'../photos/' + filename" :alt="job.title" @click="lightboxUrl = '../photos/' + filename">
+      </figure>
+    </div>
+    <p class="empty-note" style="padding-left:34px;" v-else>
+      No photos yet for this job — add filenames to its photos[] field in jobs/{{ job.id }}.json.
+    </p>
+  </main>
+
+  <div class="lightbox" v-if="lightboxUrl" @click="closeLightbox">
+    <button class="lightbox-close" @click.stop="closeLightbox" aria-label="Close">×</button>
+    <img :src="lightboxUrl" @click.stop>
+  </div>
+
+  <div class="toast" v-if="toastMsg">{{ toastMsg }}</div>
+
+</div>
+
+<script>
+const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+
+createApp({
+  setup(){
+    // Archive mode: generate-archive.js injects window.__ARCHIVE_DATA__
+    // into a baked copy of this file, no fetch() needed. Absent on the
+    // live, server-fetched page — behavior there is unchanged.
+    const archiveData = window.__ARCHIVE_DATA__ || null;
+    const jobId = archiveData ? archiveData.job.id : new URLSearchParams(window.location.search).get('id');
+    function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
+
+    const job = ref(null);
+    const linkedPerson = ref(null);
+    const loadError = ref('');
+    const lightboxUrl = ref(null);
+    const toastMsg = ref('');
+
+    function closeLightbox(){ lightboxUrl.value = null; }
+    function onKeydown(e){ if(e.key === 'Escape') closeLightbox(); }
+    onMounted(()=> window.addEventListener('keydown', onKeydown));
+    onUnmounted(()=> window.removeEventListener('keydown', onKeydown));
+
+    const linkedPersonName = computed(()=> linkedPerson.value ? linkedPerson.value.name : (job.value ? job.value.linked_person : ''));
+
+    async function fetchJson(path){
+      const res = await fetch(path, { cache: 'no-store' });
+      if(!res.ok) throw new Error(res.status + ' ' + path);
+      return res.json();
+    }
+
+    async function load(){
+      if(archiveData){
+        job.value = archiveData.job;
+        linkedPerson.value = archiveData.linkedPerson || null;
+        return;
+      }
+      try{
+        job.value = await fetchJson('../jobs/' + jobId + '.json');
+      }catch(e){
+        loadError.value = 'Could not load jobs/' + jobId + '.json.';
+        return;
+      }
+      if(job.value.linked_person){
+        try{ linkedPerson.value = await fetchJson('../people/' + job.value.linked_person + '.json'); }
+        catch(e){ console.warn('Could not load linked person', job.value.linked_person); }
+      }
+    }
+
+    load();
+
+    return {
+      jobId, job, loadError, linkedPersonName, personHref,
+      lightboxUrl, toastMsg, closeLightbox
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

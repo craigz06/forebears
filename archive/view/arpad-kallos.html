@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/vendor/fonts/fonts.css">
 <script src="../assets/vendor/vue.global.prod.js"></script>
 <script src="person-data.js"></script>
-<script>window.__ARCHIVE_DATA__ = {"person":{"id":"arpad-kallos","name":"Arpad Kallos","nickname":"Armin Klein","birth":{"date":"September 9, 1882","place":"Kunszentmárton, Hungary"},"death":{"date":"November 26, 1960","place":"Tuckahoe, NY"},"parents":["samuel-klein","rosa-klein"],"spouses":[],"children":[],"placesLived":["New York, NY","Cleveland, OH","Eastchester, Westchester County, NY"],"occupation":"Portrait painter","education":["Nagybánya Free School, Hungary (1913)","Studied under Ballo Ede, Budapest Fine Arts College"],"military":"","biography":"Arpad Kallos, also known professionally as Armin Klein, was born September 9, 1882 in Kunszentmárton, Hungary. Trained at the Nagybánya Free School and under Ballo Ede at the Budapest Fine Arts College, he worked as a portrait painter, winning the Erzsébetvárosi Casino prize in 1917. He settled in New York in 1922, painting portraits and exhibiting at the Cleveland Museum of Art in 1925 — one of his Biedermeier works was purchased for Franz Josef, Emperor of Austria. He was naturalized as a US citizen in 1928 and later lived in Eastchester, Westchester County, NY, where he died November 26, 1960 (in nearby Tuckahoe), at age 78. He was the brother of Margaret Klein, later Margaret Cline — Craig's paternal grandmother.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"samuel-klein":{"id":"samuel-klein","name":"Samuel Klein","nickname":"","birth":{"date":"1870","place":""},"death":{"date":"1939","place":"Budapest, Hungary"},"parents":[],"spouses":["rosa-klein"],"children":["arpad-kallos","margaret-klein-cline"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's great-grandfather on his father's side; father of portrait painter Arpad Kallos and of Margaret Klein Cline.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"rosa-klein":{"id":"rosa-klein","name":"Rosa Klein","nickname":"","birth":{"date":"1875","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["samuel-klein"],"children":["arpad-kallos","margaret-klein-cline"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's great-grandmother on his father's side; mother of portrait painter Arpad Kallos and of Margaret Klein Cline.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
+<script>window.__ARCHIVE_DATA__ = {"person":{"id":"arpad-kallos","name":"Arpad Kallos","nickname":"Armin Klein","birth":{"date":"September 9, 1882","place":"Kunszentmárton, Hungary"},"death":{"date":"November 26, 1960","place":"Tuckahoe, NY"},"parents":["samuel-klein","rosa-klein"],"spouses":[],"children":[],"placesLived":["New York, NY","Cleveland, OH","Eastchester, Westchester County, NY"],"occupation":"Portrait painter","education":["Nagybánya Free School, Hungary (1913)","Studied under Ballo Ede, Budapest Fine Arts College"],"military":"","biography":"Arpad Kallos, also known professionally as Armin Klein, was born September 9, 1882 in Kunszentmárton, Hungary. Trained at the Nagybánya Free School and under Ballo Ede at the Budapest Fine Arts College, he worked as a portrait painter, winning the Erzsébetvárosi Casino prize in 1917. He settled in New York in 1922, painting portraits and exhibiting at the Cleveland Museum of Art in 1925 — one of his Biedermeier works was purchased for Franz Josef, Emperor of Austria. He was naturalized as a US citizen in 1928 and later lived in Eastchester, Westchester County, NY, where he died November 26, 1960 (in nearby Tuckahoe), at age 78. He was the brother of Margaret Klein, later Margaret Cline — Craig's paternal grandmother.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"sections":{"eras":[],"jobs":[],"stories":[],"photos":[],"cars":[],"art":[],"architecture":[],"inventions":[],"books":[]},"peopleById":{"samuel-klein":{"id":"samuel-klein","name":"Samuel Klein","nickname":"","birth":{"date":"1870","place":""},"death":{"date":"1939","place":"Budapest, Hungary"},"parents":[],"spouses":["rosa-klein"],"children":["arpad-kallos","margaret-klein-cline"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's great-grandfather on his father's side; father of portrait painter Arpad Kallos and of Margaret Klein Cline.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"},"rosa-klein":{"id":"rosa-klein","name":"Rosa Klein","nickname":"","birth":{"date":"1875","place":""},"death":{"date":"","place":""},"parents":[],"spouses":["samuel-klein"],"children":["arpad-kallos","margaret-klein-cline"],"placesLived":[],"occupation":"","education":[],"military":"","biography":"Craig's great-grandmother on his father's side; mother of portrait painter Arpad Kallos and of Margaret Klein Cline.","photos":[],"videos":[],"stories":[],"updated":"2026-07-31 15:30"}},"photoNotes":{}};</script>
 <style>
   :root{
     --paper:#F2E8D5;
@@ -296,7 +296,21 @@
       </div>
     </div>
 
-    
+    <div v-if="jobTiles.length">
+      <div class="section-label">Career</div>
+      <div class="eras-grid">
+        <a class="era-tile" v-for="j in jobTiles" :key="j.id" :href="jobHref(j.id)">
+          <img v-if="j.thumbSrc" class="era-thumb" :src="j.thumbSrc" :alt="j.title">
+          <div v-else class="era-thumb placeholder">no photo</div>
+          <div class="era-label">
+            <div class="era-title">{{ j.title }}</div>
+            <div class="era-years" v-if="j.years">{{ j.years }}</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+
 
     <div v-if="sections.stories && sections.stories.length">
       <div class="section-label">Stories</div>
@@ -353,7 +367,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -392,10 +406,11 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
+    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
-    const sections = reactive({ eras: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
+    const sections = reactive({ eras: [], jobs: [], stories: [], photos: [], cars: [], art: [], architecture: [], inventions: [], books: [] });
     const expandedStories = reactive({});
     const loadError = ref('');
     const lightboxUrl = ref(null);
@@ -448,6 +463,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
@@ -482,8 +498,8 @@ createApp({
 
     return {
       personId, person, loadError, lifespan, heroMedia, heroIsVideo, photoSrc, parentsDisplay, spousesDisplay, childrenDisplay,
-      eraTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
-      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, recordHref
+      eraTiles, jobTiles, sections, stories: sections.stories, expandedStories, isLong, toggleStory, storyPeopleNames, lightboxUrl,
+      initials, closeLightbox, gridCols, carsThumb, personHref, eraHref, jobHref, recordHref
     };
   }
 }).mount('#app');

@@ -1,7 +1,7 @@
 async function loadPersonRecord(personId) {
   const person = await fetchJSON(`../people/${personId}.json`);
   const sections = {};
-  const folders = ['eras', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
+  const folders = ['eras', 'jobs', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
   for (const folder of folders) {
     sections[folder] = await findRecordsForPerson(folder, personId, person);
   }
@@ -43,8 +43,8 @@ async function findRecordsForPerson(folder, personId, person) {
       }
     }
   }
-  // If this is the eras folder, sort matches chronologically by start year
-  if (folder === 'eras') {
+  // If this is the eras or jobs folder, sort matches chronologically by start year
+  if (folder === 'eras' || folder === 'jobs') {
     matches.sort((a,b) => {
       const ay = parseStartYear(a.years || a.years || '');
       const by = parseStartYear(b.years || b.years || '');

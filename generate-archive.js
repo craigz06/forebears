@@ -16,7 +16,7 @@ const path = require('path');
 
 const ROOT = __dirname;
 const OUT = path.join(ROOT, 'archive');
-const FOLDERS = ['eras', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
+const FOLDERS = ['eras', 'jobs', 'stories', 'photos', 'cars', 'art', 'architecture', 'inventions', 'books'];
 
 function readJSON(p) { return JSON.parse(fs.readFileSync(p, 'utf8')); }
 function tryReadJSON(p) { try { return readJSON(p); } catch (e) { return null; } }
@@ -45,7 +45,7 @@ function findRecordsForPerson(folder, personId, person) {
       matches.push({ id: filename, file: filename });
     }
   }
-  if (folder === 'eras') {
+  if (folder === 'eras' || folder === 'jobs') {
     matches.sort((a, b) => {
       const ay = parseStartYear(a.years), by = parseStartYear(b.years);
       if (ay === by) return (a.id || '').localeCompare(b.id || '');
@@ -303,6 +303,24 @@ function main() {
     }
   }
 
+  // Bake job pages — same reasoning/shape as era pages above (job.html is
+  // a copy of era.html reading jobs/ instead of eras/).
+  const jobTemplateSrc = fs.readFileSync(path.join(ROOT, 'view', 'job.html'), 'utf8');
+  let jobPagesGenerated = 0;
+  for (const job of loadFolderRecords('jobs')) {
+    if (!job.id) continue;
+    try {
+      (job.photos || []).forEach(f => allMedia.add(f));
+      if (job.hero_video) allVideos.add(job.hero_video);
+      const linkedPerson = job.linked_person ? tryReadJSON(path.join(ROOT, 'people', job.linked_person + '.json')) : null;
+      const html = bakeRecordHTML(jobTemplateSrc, { job, linkedPerson });
+      fs.writeFileSync(path.join(OUT, 'view', job.id + '.html'), html);
+      jobPagesGenerated++;
+    } catch (e) {
+      failed.push({ slug: 'jobs/' + job.id, error: e.message });
+    }
+  }
+
   copyDirRecursive(path.join(ROOT, 'assets'), path.join(OUT, 'assets'));
 
   let copied = 0;
@@ -330,7 +348,7 @@ function main() {
   fs.writeFileSync(path.join(OUT, 'index.html'), buildIndexHTML(indexEntries));
 
   console.log(`Generated ${indexEntries.length}/${slugs.length} person pages -> ${path.relative(ROOT, OUT)}/view/`);
-  console.log(`Generated ${recordPagesGenerated} art/architecture/cars record pages, ${eraPagesGenerated} era pages, and automobiles.html`);
+  console.log(`Generated ${recordPagesGenerated} art/architecture/cars record pages, ${eraPagesGenerated} era pages, ${jobPagesGenerated} job pages, and automobiles.html`);
   console.log(`Copied ${copied}/${allMedia.size} referenced media files -> ${path.relative(ROOT, OUT)}/photos/`);
   console.log(`Copied ${videosCopied}/${allVideos.size} referenced videos -> ${path.relative(ROOT, OUT)}/videos/`);
   console.log(`Wrote ${path.relative(ROOT, OUT)}/index.html`);
