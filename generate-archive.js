@@ -311,6 +311,7 @@ function main() {
     if (!job.id) continue;
     try {
       (job.photos || []).forEach(f => allMedia.add(f));
+      if (job.logo) allMedia.add(job.logo);
       if (job.hero_video) allVideos.add(job.hero_video);
       const linkedPerson = job.linked_person ? tryReadJSON(path.join(ROOT, 'people', job.linked_person + '.json')) : null;
       const html = bakeRecordHTML(jobTemplateSrc, { job, linkedPerson });

@@ -1,15 +1,17 @@
 {
   "id": "environmental-systems-corp",
   "title": "Environmental Systems Corp",
-  "years": "c. 1970",
+  "years": "1969",
   "role": "Entry-level staff",
   "linked_person": "craig-colin-cline",
   "person_id": "craig-colin-cline",
   "hero_video": "",
-  "story_excerpt": "Early environmental engineering firm — thermal discharge studies and aerial infrared photography of power plant runoff.",
+  "logo": "ESC.JPG",
+  "story_excerpt": "Founded in 1969 in Knoxville, TN, by a small group of investors, researchers from Oak Ridge National Laboratory, and University of Tennessee faculty to study thermal discharge from fossil-fired power plants into waterways. Early work included aerial infrared photography of river thermal plumes, operated out of a hangar at the Knoxville airport. Through the 1970s and 80s, ESC pioneered specialized monitoring equipment, including laser instruments for aerosol particle sizing and cooling-tower drift data collection. My role there involved building a probe for their \"PILLS II-A\" system — Particulate Instrumentation by Laser Light Scattering.",
+  "legacy": "Later acquired by TSI Incorporated (1999), and in 2021 united with Spectrum Systems to become ESC Spectrum, specializing in air emissions compliance.",
   "places": [
     "Knoxville, TN"
   ],
-  "photos": [],
-  "updated": "2026-08-05"
+  "photos": ["ESC-1.png", "ESC-7.jpg"],
+  "updated": "2026-08-06"
 }

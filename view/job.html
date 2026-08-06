@@ -76,12 +76,14 @@
   }
   .ledger-head{ padding-left:34px; margin-bottom:20px; border-bottom:1px dashed var(--line); padding-bottom:18px; }
   .ledger-id{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); letter-spacing:0.03em; }
-  .ledger-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--walnut-dark); margin:2px 0 4px; }
+  .ledger-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--walnut-dark); margin:2px 0 4px; display:flex; align-items:center; gap:12px; }
+  .job-logo{ width:44px; height:44px; border-radius:50%; object-fit:cover; border:1px solid var(--line); box-shadow:var(--shadow); flex-shrink:0; }
   .ledger-dates{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
   .ledger-person{ font-size:0.85rem; color:var(--ink-soft); margin-top:2px; }
 
   .content-inner{ padding-left:34px; }
   .bio{ font-size:1rem; line-height:1.7; margin:0 0 8px; max-width:70ch; }
+  .bio-note{ font-size:0.88rem; line-height:1.6; margin:0 0 8px; max-width:70ch; color:var(--ink-soft); font-style:italic; }
 
   .section-label{
     font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:1.15rem;
@@ -163,7 +165,7 @@
     <div class="ledger">
       <div class="ledger-head">
         <div class="ledger-id">jobs/{{ job.id }}.json</div>
-        <div class="ledger-title">{{ job.title || job.id }}</div>
+        <div class="ledger-title">{{ job.title || job.id }}<img v-if="job.logo" class="job-logo" :src="'../photos/' + job.logo" :alt="job.title + ' logo'"></div>
         <div class="ledger-dates" v-if="job.role">{{ job.role }}<span v-if="job.years"> · {{ job.years }}</span></div>
         <div class="ledger-dates" v-else-if="job.years">{{ job.years }}</div>
         <div class="ledger-person" v-if="job.linked_person">Part of {{ linkedPersonName }}'s story</div>
@@ -171,6 +173,7 @@
 
       <div class="content-inner">
         <p class="bio" v-if="job.story_excerpt">{{ job.story_excerpt }}</p>
+        <p class="bio-note" v-if="job.legacy">{{ job.legacy }}</p>
       </div>
     </div>
 
@@ -180,8 +183,8 @@
     </div>
 
     <div class="section-label">Photos</div>
-    <div class="gallery" v-if="job.photos && job.photos.length">
-      <figure v-for="filename in job.photos" :key="filename">
+    <div class="gallery" v-if="galleryPhotos.length">
+      <figure v-for="filename in galleryPhotos" :key="filename">
         <img :src="'../photos/' + filename" :alt="job.title" @click="lightboxUrl = '../photos/' + filename">
       </figure>
     </div>
@@ -224,6 +227,14 @@ createApp({
 
     const linkedPersonName = computed(()=> linkedPerson.value ? linkedPerson.value.name : (job.value ? job.value.linked_person : ''));
 
+    // When there's no hero_video, photos[0] doubles as the hero image
+    // above (see the hero-video v-else-if block) — exclude it here so it
+    // doesn't also repeat as a small tile in this gallery.
+    const galleryPhotos = computed(()=>{
+      if(!job.value || !job.value.photos) return [];
+      return job.value.hero_video ? job.value.photos : job.value.photos.slice(1);
+    });
+
     async function fetchJson(path){
       const res = await fetch(path, { cache: 'no-store' });
       if(!res.ok) throw new Error(res.status + ' ' + path);
@@ -251,7 +262,7 @@ createApp({
     load();
 
     return {
-      jobId, job, loadError, linkedPersonName, personHref,
+      jobId, job, loadError, linkedPersonName, personHref, galleryPhotos,
       lightboxUrl, toastMsg, closeLightbox
     };
   }
