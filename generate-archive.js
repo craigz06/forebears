@@ -258,6 +258,7 @@ function main() {
     { folder: 'art', template: 'art.html' },
     { folder: 'architecture', template: 'architecture.html' },
     { folder: 'cars', template: 'cars.html' },
+    { folder: 'inventions', template: 'inventions.html' },
   ];
   let recordPagesGenerated = 0;
   for (const { folder, template } of recordPageTypes) {
@@ -349,7 +350,7 @@ function main() {
   fs.writeFileSync(path.join(OUT, 'index.html'), buildIndexHTML(indexEntries));
 
   console.log(`Generated ${indexEntries.length}/${slugs.length} person pages -> ${path.relative(ROOT, OUT)}/view/`);
-  console.log(`Generated ${recordPagesGenerated} art/architecture/cars record pages, ${eraPagesGenerated} era pages, ${jobPagesGenerated} job pages, and automobiles.html`);
+  console.log(`Generated ${recordPagesGenerated} art/architecture/cars/inventions record pages, ${eraPagesGenerated} era pages, ${jobPagesGenerated} job pages, and automobiles.html`);
   console.log(`Copied ${copied}/${allMedia.size} referenced media files -> ${path.relative(ROOT, OUT)}/photos/`);
   console.log(`Copied ${videosCopied}/${allVideos.size} referenced videos -> ${path.relative(ROOT, OUT)}/videos/`);
   console.log(`Wrote ${path.relative(ROOT, OUT)}/index.html`);

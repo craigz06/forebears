@@ -367,7 +367,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars','architecture'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -406,7 +406,15 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
-    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
+    function jobHref(id){
+      // Architectural Design Concepts' work is the same body of work as
+      // the Architecture > Portfolio record — consolidated to one entry
+      // point rather than duplicated across two pages.
+      if(id === 'architectural-design-concepts'){
+        return archiveData ? 'architecture-portfolio.html' : 'architecture.html?record=architecture-portfolio';
+      }
+      return archiveData ? (id + '.html') : ('job.html?id=' + id);
+    }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
@@ -463,7 +471,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
-    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: j.logo ? photoSrc(j.logo) : ((j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null) })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }

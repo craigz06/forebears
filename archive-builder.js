@@ -277,11 +277,12 @@ async function generateArchiveInBrowser(rootHandle, onProgress) {
   // them resolve inside the archive too. Their images are already in
   // allMedia via abCollectReferencedMedia's Creations-section walk (every
   // image in these 3 folders), so no extra media collection needed here.
-  notify('Generating art/architecture/cars record pages…');
+  notify('Generating art/architecture/cars/inventions record pages…');
   const recordPageTypes = [
     { folder: 'art', template: 'art.html' },
     { folder: 'architecture', template: 'architecture.html' },
     { folder: 'cars', template: 'cars.html' },
+    { folder: 'inventions', template: 'inventions.html' },
   ];
   let recordPagesGenerated = 0;
   for (const { folder, template } of recordPageTypes) {

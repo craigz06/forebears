@@ -366,7 +366,7 @@
 
     <!-- Generic category sections (architecture, inventions, books, etc.) -->
     <template v-for="(items, key) in sections" :key="key">
-      <div v-if="['eras','jobs','stories','photos','art','cars'].includes(key)" style="display:none"></div>
+      <div v-if="['eras','jobs','stories','photos','art','cars','architecture'].includes(key)" style="display:none"></div>
       <div v-else-if="items && items.length">
         <div class="section-label">{{ key.charAt(0).toUpperCase() + key.slice(1) }}</div>
         <div class="eras-grid">
@@ -405,7 +405,15 @@ createApp({
     const personId = archiveData ? archiveData.person.id : new URLSearchParams(window.location.search).get('id');
     function personHref(id){ return archiveData ? (id + '.html') : ('person.html?id=' + id); }
     function eraHref(id){ return archiveData ? (id + '.html') : ('era.html?id=' + id); }
-    function jobHref(id){ return archiveData ? (id + '.html') : ('job.html?id=' + id); }
+    function jobHref(id){
+      // Architectural Design Concepts' work is the same body of work as
+      // the Architecture > Portfolio record — consolidated to one entry
+      // point rather than duplicated across two pages.
+      if(id === 'architectural-design-concepts'){
+        return archiveData ? 'architecture-portfolio.html' : 'architecture.html?record=architecture-portfolio';
+      }
+      return archiveData ? (id + '.html') : ('job.html?id=' + id);
+    }
     function recordHref(key, id){ return id ? (archiveData ? (id + '.html') : (key + '.html?record=' + id)) : '#'; }
     const person = ref(null);
     const peopleById = reactive({});
