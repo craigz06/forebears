@@ -462,7 +462,7 @@ createApp({
     const childrenDisplay = computed(()=> person.value ? (person.value.children||[]).map(id => resolvePerson(id)) : []);
 
     const eraTiles = computed(()=> (sections.eras || []).map(e => ({ id: e.id, title: e.title || e.id, years: e.years || '', thumbSrc: (e.photos && e.photos.length) ? photoSrc(e.photos[0]) : null })));
-    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: (j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null })));
+    const jobTiles = computed(()=> (sections.jobs || []).map(j => ({ id: j.id, title: j.title || j.id, years: j.years || '', thumbSrc: j.logo ? photoSrc(j.logo) : ((j.photos && j.photos.length) ? photoSrc(j.photos[0]) : null) })));
 
     function isLong(text){ return (text||'').length > 260; }
     function toggleStory(id){ expandedStories[id] = !expandedStories[id]; }
